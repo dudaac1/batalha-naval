@@ -99,11 +99,23 @@ public class JanelaInicial extends JFrame implements ActionListener {
                 //    private JRadioButton radioMontar;
                 String nomeJogador = fieldNome.getText();
                 System.out.println("Este é o nome: "+nomeJogador);
-                System.out.println("Jogo aleatório está "+radioAleatorio.isSelected() );
-                System.out.println("Montar jogo está "+radioMontar.isSelected());
-                System.out.println();
+//                System.out.println("Jogo aleatório está "+radioAleatorio.isSelected() );
+//                System.out.println("Montar jogo está "+radioMontar.isSelected());
+//                System.out.println();
                 
-                labPreencha.setVisible(true);
+                
+                if (nomeJogador.equals("")) {
+                    labPreencha.setVisible(true);
+                } else {
+                    boolean jogoAleatorio = radioAleatorio.isSelected();
+                    if (jogoAleatorio) {
+                        // chamar a janela de jogar após ter montado o jogo
+                        // acho que fechar essa janela tbm
+                    }
+                    else {
+                        // abrir a janela pra montar jogo
+                    }
+                }
             }
            
 //    public static void main(String args[]) {

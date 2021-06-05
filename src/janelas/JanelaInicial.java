@@ -1,11 +1,16 @@
+package janelas;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import sistema.Sistema;
 
 /**
  * @author Eduarda e Julia
  */
 public class JanelaInicial extends JFrame implements ActionListener {
+    private Sistema sistema;
     // globais para a classe pois serão necessários em outros pontos
     private JLabel labPreencha;
     private JTextField fieldNome;
@@ -14,7 +19,9 @@ public class JanelaInicial extends JFrame implements ActionListener {
     private JButton btnJogar;
     
     public JanelaInicial() {
-      inicializar();
+        this.sistema = new Sistema();
+        this.sistema.criarElementos();
+        inicializar();
         //run();
     }
     
@@ -93,27 +100,24 @@ public class JanelaInicial extends JFrame implements ActionListener {
     }
     
    @Override
-    public void actionPerformed(ActionEvent event) {  // método do evento do botão
-                //    private JTextField fieldName;
-                //    private JRadioButton radioAleatorio;
-                //    private JRadioButton radioMontar;
+     public void actionPerformed(ActionEvent event) {  // método do evento do botão
                 String nomeJogador = fieldNome.getText();
-                System.out.println("Este é o nome: "+nomeJogador);
-//                System.out.println("Jogo aleatório está "+radioAleatorio.isSelected() );
-//                System.out.println("Montar jogo está "+radioMontar.isSelected());
-//                System.out.println();
-                
-                
-                if (nomeJogador.equals("")) {
+                System.out.println("Este é o nome: >"+nomeJogador+"<");
+                if (nomeJogador.equals("") || nomeJogador.equals(null) || nomeJogador.equals(" ")) {
                     labPreencha.setVisible(true);
                 } else {
+                    
                     boolean jogoAleatorio = radioAleatorio.isSelected();
                     if (jogoAleatorio) {
-                        // chamar a janela de jogar após ter montado o jogo
-                        // acho que fechar essa janela tbm
+                       // função gerarJogoAleatorioJogador()
+                       // criando a janela nova e passando sistema como parâmetro
+                       // para que as infos sejam passadas adiante
+                       JanelaJogo jogar = new JanelaJogo(sistema);
+                       jogar.setVisible(true);
                     }
                     else {
-                        // abrir a janela pra montar jogo
+                        MontarJogo janela2 = new MontarJogo(this.sistema);
+                        janela2.setVisible(true);
                     }
                 }
             }

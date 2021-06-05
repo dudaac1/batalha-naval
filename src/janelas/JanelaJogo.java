@@ -1,17 +1,23 @@
+package janelas;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import sistema.Sistema; // adicionei a importação do Sistema.java
 
 /**
  * @author Eduarda e Julia
  */
 public class JanelaJogo extends JFrame implements ActionListener {
+    private Sistema sistema;
     private int i;
     private String button;
     //private JButton tiro1, tiro2, tiro3, bDica, bSair;
 
     
-    public JanelaJogo() {
+    public JanelaJogo(Sistema sistema) {
+        this.sistema = sistema; // pra passar as infos de uma janela pra outra
         jogar();
     }
     
@@ -24,9 +30,27 @@ public class JanelaJogo extends JFrame implements ActionListener {
         setFont(new Font("Arial", Font.PLAIN, 14));
         setVisible(true);
         Container janelaJogo = getContentPane();
-        setLayout(new GridLayout(0, 2)); // Dois tabuleiros.
+        setLayout(new GridLayout(0, 1)); // N linhas x 1 coluna
+//        setLayout(new GridLayout(0, 2)); // Dois tabuleiros.
         
         //JPanel p = new JPanel(new GridBagLayout());
+        JPanel painelBotoes = new JPanel(new GridLayout(1, 6));
+        JButton tiro1 = new JButton("Disparo comum");
+        JButton tiro2 = new JButton("Disparo cascata");
+        JButton tiro3 = new JButton("Disparo ");
+        JButton tiro4 = new JButton(" cascata");
+        JButton dica = new JButton("DDDmum");
+        JButton sair = new JButton("SSascata");
+        painelBotoes.add(tiro1);
+        painelBotoes.add(tiro2);
+        painelBotoes.add(tiro3);
+        painelBotoes.add(tiro4);
+        painelBotoes.add(dica);
+        painelBotoes.add(sair);
+        janelaJogo.add(painelBotoes);
+        
+        JPanel painelTabuleiros = new JPanel();
+        painelTabuleiros.setLayout(new GridLayout(0, 2)); // Dois tabuleiros.
         
         JPanel painelJogador = new JPanel(); 
         painelJogador.setLayout(new GridLayout(10, 10));
@@ -69,17 +93,26 @@ public class JanelaJogo extends JFrame implements ActionListener {
         
         //janelaJogo.add(p, BorderLayout.NORTH);
         //janelaJogo.add(painelJogador, BorderLayout.WEST);
-        janelaJogo.add(painelJogador);
-        //janelaJogo.add(painelComputador, BorderLayout.EAST); 
-        janelaJogo.add(painelComputador);
         
-        JButton tiro1 = new JButton("Disparo comum");
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.NORTH;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.anchor = GridBagConstraints.NORTH;
-        janelaJogo.add(tiro1, c);
+        painelTabuleiros.add(painelJogador);
+        painelTabuleiros.add(painelComputador);
+        janelaJogo.add(painelTabuleiros);
+//        janelaJogo.add(painelJogador);
+//        janelaJogo.add(painelComputador);
+        
+        
+        //janelaJogo.add(painelComputador, BorderLayout.EAST); 
+        
+        
+        
+        
+//        JButton tiro1 = new JButton("Disparo comum");
+//        GridBagConstraints c = new GridBagConstraints();
+//        c.fill = GridBagConstraints.NORTH;
+//        c.gridx = 0;
+//        c.gridy = 0;
+//        c.anchor = GridBagConstraints.NORTH;
+//        janelaJogo.add(tiro1, c);
     }
 
     @Override
@@ -88,7 +121,9 @@ public class JanelaJogo extends JFrame implements ActionListener {
     }
     
     public static void main(String args[]) {
-        JanelaJogo janelaJogo = new JanelaJogo();
+        Sistema sistema = new Sistema();
+        sistema.setNomeJogador("Fulanin");
+        JanelaJogo janelaJogo = new JanelaJogo(sistema);
         janelaJogo.setVisible(true);
    }   
 }

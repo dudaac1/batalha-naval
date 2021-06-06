@@ -12,7 +12,7 @@ public class Elemento {
     public Elemento(String nome, int tamanho) {
         this.nome = nome;
         this.tamanho = tamanho;
-        this.url = "./recursos/" + nome + ".png";
+        this.url = "resources/" + nome + ".png";
         this.codigo = nome.charAt(0) + String.valueOf(tamanho); // letra inicial + tamanho
     }
     

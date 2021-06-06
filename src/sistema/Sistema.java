@@ -6,12 +6,13 @@ package sistema;
 public class Sistema {
     private Jogador usuario;
     private Jogador computador;
-    private Elemento[] elementos;
+    public Elemento[] elementos;
     
     public Sistema() {
         this.usuario = new Jogador("");
         this.computador = new Jogador("Computador");
         this.elementos = new Elemento[4];
+        this.criarElementos(); // isso tem q sair dps dos tstes
     }
     
     public void setNomeJogador(String nome) {
@@ -29,6 +30,11 @@ public class Sistema {
         this.elementos[2] = new Elemento("Submarino", 2);
         this.elementos[3] = new Elemento("Caça", 2);
     }
+    
+    public int getQuantElementos() {
+        return this.elementos.length;
+    }
+    
     
     // da pra ter a função de gerar o tabuleiro do Computador aqui.
     // ai é só dar um sistema.gerarTabuleiroComputador

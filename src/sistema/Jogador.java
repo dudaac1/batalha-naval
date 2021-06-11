@@ -10,9 +10,7 @@ public class Jogador {
     public Jogador(String nome) {
         this.nome = nome;
         this.tabuleiro = new boolean[10][10];
-        for (int i = 0; i < 10; i++)
-            for (int j = 0; j < 10; j++)
-                tabuleiro[i][j] = false;
+        this.limparTabuleiroUsuario();
     }
     
     public String getNome() {
@@ -27,21 +25,33 @@ public class Jogador {
         return this.tabuleiro;
     }
     
-    
-    // tem que ter uma verificação aqui 
-    // pro tamanho do navio não estourar o tamanho do tabuleiro
-    // por exemplo, o submarino/caça só podem ser incluidos até
-    // a posição I das colunas, pq senão eles estouram o tamanho
-    // do tabuleiro
-    public void inserirNavio(int linha, int coluna, int tamanho){
-        for (int i = linha; i < linha + tamanho; i++ )
-            for (int j = coluna; j < coluna + tamanho; j++)
-                this.tabuleiro[linha][coluna] = true; 
+    public boolean getPosicaoTabuleiro(int linha, int coluna) {
+        return this.tabuleiro[linha][coluna];
     }
     
-    public void removerNavio(int linha, int coluna, int tamanho){
-        for (int i = linha; i < linha + tamanho; i++ )
-            for (int j = coluna; j < coluna + tamanho; j++)
-                this.tabuleiro[linha][coluna] = false; 
+    
+    public void limparTabuleiroUsuario() {
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+                tabuleiro[i][j] = false;
     }
+    
+    public void imprimirTabuleiro() {
+        for (int i = 0; i < 10; i++) {
+            System.out.printf( (i+1) + ": ");
+            for (int j = 0; j < 10; j++)
+                System.out.print((tabuleiro[i][j] == true ? "1 " : "0 "));
+            System.out.println("");
+        }
+    }
+    
+    public boolean inserirNavio(int linha, int coluna, int tamanho){
+        if (coluna + tamanho > 10) 
+            return false;
+        
+        for (int j = coluna; j < coluna + tamanho; j++) 
+            this.tabuleiro[linha][j] = true;
+        return true;
+    }
+
 }

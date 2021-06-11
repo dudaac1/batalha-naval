@@ -120,12 +120,12 @@ public class JanelaInicial extends JFrame implements ActionListener {
         if (nomeJogador.equals("") || nomeJogador.equals(" ")) {
             labPreencha.setText("Preencha o campo acima.");
         } else {
-            sistema.setNomeJogador(nomeJogador);
+            this.sistema.getUsuario().setNome(nomeJogador);
+//            sistema.setNomeUsuario(nomeJogador);
             boolean jogoAleatorio = radioAleatorio.isSelected();
             if (jogoAleatorio) {
-                // função gerarJogoAleatorioJogador()
-                // criando a janela nova e passando sistema como parâmetro
-                // para que as infos sejam passadas adiante
+                this.sistema.gerarTabuleiro(this.sistema.getComputador()); // gerando tabuleiro do computador
+                this.sistema.gerarTabuleiro(this.sistema.getUsuario()); // gerando tabuleiro do usuario
                 JanelaJogo jogar = new JanelaJogo(this.sistema);
                 this.setVisible(false); // deixa a janela atual invisível
                 jogar.setVisible(true);
@@ -137,12 +137,7 @@ public class JanelaInicial extends JFrame implements ActionListener {
         }
     }
 
-//    public static void main(String args[]) {
-//        JanelaInicial janelaInicial = new JanelaInicial();
-//        janelaInicial.setVisible(true);
-//   }
     public static void main(String[] args) {
-////        SwingUtilities.invokeLater(new JanelaInicial());
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {

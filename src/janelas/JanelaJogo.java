@@ -13,9 +13,14 @@ public class JanelaJogo extends JFrame implements ActionListener {
     private Sistema sistema;
     private int i;
     private String button;
+    private JanelaSair janelaSair;
+    private Boolean clicouTiro1 = false, clicouTiro2 = false, clicouTiro3 = false, clicouDica = false, clicouSair = false;
     
     public JanelaJogo(Sistema sistema) {
         this.sistema = sistema; // Passando as informações de uma janela para outra.
+        //this.janelaSair = new JanelaSair(this.sistema);
+        this.janelaSair = new JanelaSair(this, this.sistema);
+        //this.janelaSair.setVisible(false);
         jogar();
     }
     
@@ -34,7 +39,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
         //setLayout(new GridLayout(0, 1)); // N linhas x 1 coluna.
         //JPanel painelBotoes = new JPanel(new GridLayout(1, 6));
         JPanel painelBotoes = new JPanel();
-//        painelBotoes.setLayout(new GridLayout(1, 5, 5, 0));
+        //painelBotoes.setLayout(new GridLayout(1, 5, 5, 0));
         painelBotoes.setLayout(new GridBagLayout());
         
         JButton tiro1 = new JButton("Disparo comum");
@@ -96,7 +101,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                 JButton button = new JButton("");
                 button.setBackground(new Color(88, 183, 227));
                 button.addActionListener(this);
-                button.setName(j + "-" + j);
+                button.setName(i + "-" + j);
                 painelJogador.add(button);
             }
         }
@@ -121,7 +126,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                 JButton button = new JButton("");
                 button.setBackground(new Color(222, 136, 230));
                 button.addActionListener(this);
-                button.setName(j + "-" + j);
+                button.setName(i + "-" + j);
                 painelComputador.add(button);
             }
         }
@@ -131,7 +136,6 @@ public class JanelaJogo extends JFrame implements ActionListener {
         gbc.gridwidth = 3;
         gbc.gridheight = 3;
         gbc.fill = GridBagConstraints.BOTH;
-
         
         painelTabuleiros.add(painelJogador);
         painelTabuleiros.add(painelComputador);
@@ -148,18 +152,64 @@ public class JanelaJogo extends JFrame implements ActionListener {
            
            switch(botaoNome) {
                 case "Disparo comum":
-                   break;
+                    this.clicouTiro1 = true;
+                    this.clicouTiro2 = false;
+                    this.clicouTiro3 = false;
+                    this.clicouDica = false;
+                    this.clicouSair = false;
+                    break;
                 case "Disparo cascata":
-                   break;
+                    this.clicouTiro2 = true;
+                    this.clicouTiro1 = false;
+                    this.clicouTiro3 = false;
+                    this.clicouDica = false;
+                    this.clicouSair = false;
+                    break;
                 case "Disparo estrela":
-                   break;
+                    this.clicouTiro3 = true;
+                    this.clicouTiro2 = false;
+                    this.clicouTiro1 = false;
+                    this.clicouDica = false;
+                    this.clicouSair = false;
+                    break;
                 case "Dica":
+                    this.clicouDica = true;
+                    this.clicouTiro1 = false;
+                    this.clicouTiro2 = false;
+                    this.clicouTiro3 = false;
+                    this.clicouSair = false;
+                    
                    break;
                 case "Sair":
-                    //System.exit(0);
-                   JanelaSair sair = new JanelaSair(this.sistema);
-                   this.setVisible(true);
-                   sair.setVisible(true);
+                    this.janelaSair.setVisible(true); // O fluxo tem que parar aqui e não tá parando. Tem que esperar a ação da outra janela pra continuar.
+                
+                default: // Qualquer botão do tabuleiro.
+                    int linha, coluna;
+                    
+                    linha = Integer.parseInt(botaoNome.substring(0, 1)); // "Fatiar" a string para pegar apenas a linha.
+                    System.out.println(linha);
+                    
+                    coluna = Integer.parseInt(botaoNome.substring(2, 3)); // "Fatiar" a string para pegar apenas a coluna.
+                    System.out.println(coluna);
+                   
+                    
+                    if(clicouDica){
+                        //se tiver/ou não um navio na posição, abrir uma caixinha
+                        //de diálogo só com um ok informando se existe ou nao o navio 
+                    }
+                        
+                    else if(clicouTiro1){
+                                
+                    }
+                    
+                    else if(clicouTiro2){
+                                
+                    }
+                    
+                    else if(clicouTiro3){
+                                
+                    }
+
                    break;
            }
         }
@@ -167,7 +217,8 @@ public class JanelaJogo extends JFrame implements ActionListener {
     
     public static void main(String args[]) {
         Sistema sistema = new Sistema();
-        sistema.setNomeJogador("Fulanin");
+        sistema.getUsuario().setNome("Fulanin");
+//      sistema.setNomeUsuario("Fulanin");
         JanelaJogo janelaJogo = new JanelaJogo(sistema);
         janelaJogo.setVisible(true);
    }   

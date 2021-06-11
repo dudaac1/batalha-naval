@@ -10,9 +10,11 @@ import sistema.Sistema; // Importação do Sistema.java
  */
 public class JanelaSair extends JFrame implements ActionListener {
     private Sistema sistema;
-    
-    public JanelaSair(Sistema sistema) {
+    private JanelaJogo janelaJogo;
+
+    public JanelaSair(JanelaJogo janela, Sistema sistema) {
         this.sistema = sistema;
+        this.janelaJogo = janela;
         sair();
     }
     
@@ -22,7 +24,7 @@ public class JanelaSair extends JFrame implements ActionListener {
         setLocationRelativeTo(null); // Centralizando como padrão.
         setDefaultCloseOperation(EXIT_ON_CLOSE); // Para "matar" o processo quando apertar o X.
         setFont(new Font("Arial", Font.PLAIN, 14));
-        setVisible(true);
+        //setVisible(true);
         Container janelaSair = getContentPane();
         //GridBagConstraints gbc = new GridBagConstraints();
         //setLayout(new GridBagLayout());
@@ -54,16 +56,25 @@ public class JanelaSair extends JFrame implements ActionListener {
             
             switch(botaoNome) {
                 case "Reiniciar":
+                    this.janelaJogo.dispose();
+                    JanelaJogo reiniciar = new JanelaJogo(this.sistema);
+                    reiniciar.setVisible(true);
+                    this.dispose();
                     break;
                 case "Novo Jogo":
+                    this.janelaJogo.dispose();
+                    JanelaInicial novoJogo = new JanelaInicial(); 
+                    novoJogo.setVisible(true);
+                    this.dispose();
+                    //janelaJogo.setVisible(false);
                     break;
             }
         }
     }
     
     public static void main(String args[]) {
-        Sistema sistema = new Sistema();
-        JanelaSair janelaSair = new JanelaSair(sistema);
-        janelaSair.setVisible(true);
+        //Sistema sistema = new Sistema();
+        //JanelaSair janelaSair = new JanelaSair(sistema);
+        //janelaSair.setVisible(true);
    }  
 }

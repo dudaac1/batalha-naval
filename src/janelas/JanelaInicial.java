@@ -9,7 +9,7 @@ import sistema.Sistema;
 /**
  * @author Eduarda e Julia
  */
-public class JanelaInicial extends JFrame implements ActionListener {
+public class JanelaInicial extends JFrame implements ActionListener {  
 
     private Sistema sistema; // para as infos serem passadas adiante
     // globais para a classe pois serão necessários em outros pontos
@@ -21,7 +21,7 @@ public class JanelaInicial extends JFrame implements ActionListener {
 
     public JanelaInicial() {
         this.sistema = new Sistema();
-        this.sistema.criarElementos();
+        this.sistema.criarElementosEDisparos(); 
         inicializar();
     }
 
@@ -44,7 +44,6 @@ public class JanelaInicial extends JFrame implements ActionListener {
         gbc.gridy = 1;
         gbc.gridwidth = 3;
         gbc.gridheight = 2;
-//        gbc.fill = GridBagConstraints.HORIZONTAL;
         janela.add(labTitulo, gbc);
 
         JLabel labBemVindo = new JLabel("Seja bem-vindo!");
@@ -68,17 +67,14 @@ public class JanelaInicial extends JFrame implements ActionListener {
 
         fieldNome = new JTextField();
         fieldNome.setColumns(20);
-//        gbc.ipady = 1;
         gbc.gridy = 5;
         janela.add(fieldNome, gbc);
 
         // só vai ser usado se, quando o usuário apertar JOGAR
         // o campo do nome tiver vazio
-        // ai troca a visibilidade para TRUE
         labPreencha = new JLabel(" ");
         labPreencha.setForeground(Color.RED); // cor da fonte
         labPreencha.setFont(new Font("Arial", Font.PLAIN, 12));
-//        gbc.ipady = 0;
         gbc.gridy = 6;
         janela.add(labPreencha, gbc);
 

@@ -21,7 +21,8 @@ public class MontarJogo extends JFrame implements ActionListener {
 
     public MontarJogo(Sistema sistema) {
         this.sistema = sistema;
-        this.elemento = new Elemento("0", 0); //tem que ter pelo menos 1 caracter pois este está em uso na classe
+        this.elemento = new Elemento("0", 0, ""); //tem que ter pelo menos 1 caracter pois este está em uso na classe
+//        this.sistema.gerarTabuleiro(this.sistema.getUsuario()); // isso tem que sair
         montar();
     }
 
@@ -76,9 +77,11 @@ public class MontarJogo extends JFrame implements ActionListener {
                 button.setBackground(new Color(88, 183, 227));
                 button.addActionListener(this);
                 button.setName(i + "-" + j);
-                // se a posição [i][j] do tabuleiro == true (ou seja, com navio)
-                // então o botão precisa estar desabilitado e cinza
-                if (this.sistema.getUsuario().getPosicaoTabuleiro(i, j)) {
+                // se a posição [i][j] do tabuleiro != "-" (ou seja, com navio)
+                // então o botão precisa estar desabilitado e cinza,
+                String posicao = this.sistema.getUsuario().getPosicaoTabuleiro(i, j);
+//                System.out.println(i+":"+j + " = " + posicao);
+                if (!(posicao.equals("-"))) {
                     button.setEnabled(false);
                     button.setBackground(Color.LIGHT_GRAY);
                 }
@@ -97,10 +100,10 @@ public class MontarJogo extends JFrame implements ActionListener {
         painelElementos.setLayout(new GridLayout(0, 1, 0, 5));
         int i;
         JButton botao;
-        for (i = 0; i < this.sistema.elementos.length; i++) {
-            String nomeElemento = this.sistema.elementos[i].getNome();
-            String urlElemento = this.sistema.elementos[i].getUrl();
-            int tamElemento = this.sistema.elementos[i].getTamanho();
+        for (i = 0; i < this.sistema.getElementos().length; i++) {
+            String nomeElemento = this.sistema.getElementos()[i].getNome();
+            String urlElemento = this.sistema.getElementos()[i].getUrl();
+            int tamElemento = this.sistema.getElementos()[i].getTamanho();
             File arquivo = new File(urlElemento);
             if (arquivo.exists()) {
                 ImageIcon imagem = new ImageIcon(urlElemento);
@@ -113,7 +116,7 @@ public class MontarJogo extends JFrame implements ActionListener {
                 botao.setFont(new Font("Arial", Font.PLAIN, 16));
                 botao.setHorizontalAlignment(SwingConstants.CENTER);
             }
-                String codElemento = this.sistema.elementos[i].getCodigo(); // o codigo do elemento é o nome do botao
+                String codElemento = this.sistema.getElementos()[i].getCodigo(); // o codigo do elemento é o nome do botao
                 botao.setName(codElemento);
                 botao.setPreferredSize(new Dimension(300, 60));
                 botao.addActionListener(new ActionListener() { //actionListener separado para os botões dos elementos
@@ -122,7 +125,7 @@ public class MontarJogo extends JFrame implements ActionListener {
                     }
                 });
                 // if elemento.noTabuleiro == true, então o botão precisa ficar desabilitado
-                if (this.sistema.elementos[i].estaNoTabuleiro()) {
+                if (this.sistema.getElementos()[i].estaNoTabuleiro()) {
                     botao.setEnabled(false);
                     botao.setBackground(Color.LIGHT_GRAY);
                 }
@@ -193,6 +196,7 @@ public class MontarJogo extends JFrame implements ActionListener {
 
     public void Jogar() {
         System.out.println("Esse botão significa que a gente ta indo jogar");
+        this.sistema.gerarTabuleiro(this.sistema.getComputador());
         JanelaJogo jogar = new JanelaJogo(this.sistema);
         this.setVisible(false);
         jogar.setVisible(true);
@@ -220,12 +224,13 @@ public class MontarJogo extends JFrame implements ActionListener {
                                 elemento.getTamanho() + " na posição " + (linha+1) + letras.charAt(coluna+1) + "?";
             int inserir = JOptionPane.showConfirmDialog(null, mensagem, "Confirmação...", JOptionPane.YES_NO_OPTION);
             if (inserir == JOptionPane.YES_OPTION) {
-                if (this.sistema.getUsuario().inserirNavio(linha, coluna, elemento.getTamanho())) { 
-                    this.sistema.elementos[elementoIndex].colocarNoTabuleiro();
+                int tam = elemento.getTamanho();
+                String cod = elemento.getCodigo();
+                if (this.sistema.getUsuario().inserirNavio(linha, coluna, tam, cod)) { 
+                    this.sistema.getElementos()[elementoIndex].colocarNoTabuleiro();
                     MontarJogo recarregar = new MontarJogo(this.sistema); // cria uma nova janela
                     recarregar.setVisible(true); // deixa a nova janela visivel
                     this.dispose(); // "mata" a janela anteriormente aberta
-                    JOptionPane.showMessageDialog(null, "Elemento inserido no tabuleiro.");
                 } else {
                     JOptionPane.showMessageDialog(null, "Navio não foi inserido, pois a posição é muito perto da borda para o tamanho do navio.");
                 }

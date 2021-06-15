@@ -19,17 +19,21 @@ import sistema.Sistema; // Importação do Sistema.java
  */
 public class JanelaJogo extends JFrame implements ActionListener {
     private Sistema sistema;
-    private int contador = 0, posNome = 0;
+    private static int contador = 0;
+    private int posNome = 0;
     private JanelaSair janelaSair;
     private JanelaVenceu janelaVenceu;
     private JanelaPerdeu janelaPerdeu;
-    private Boolean clicouTiro1 = false, clicouTiro2 = false, clicouTiro3 = false, clicouDica = false, clicouSair = false;
+    private boolean clicouTiro1 = false, clicouTiro2 = false, clicouTiro3 = false;
+    private boolean clicouDica = false, clicouSair = false;
     private JLabel cronometro;
     private Timer tempo;
     private int vetorRanking[] = new int[15];
     private String vetorNomes[] = new String[15];
     private JLabel botaoSelecionado;
     private static int dicasRestantes = 3;
+    private int contPartes;
+    private String parteAnterior;
     
     public JanelaJogo(Sistema sistema) {
         this.sistema = sistema; // Passando as informações de uma janela para outra.
@@ -71,7 +75,9 @@ public class JanelaJogo extends JFrame implements ActionListener {
             tiro = new JButton(texto);
             tiro.setName(texto);
             tiro.addActionListener(this);
-            System.out.println("Tiro " + (i+1) + ":" + texto);
+            if (!this.sistema.getUsuario().getDisparos()[i].getDisponivel())
+                tiro.setEnabled(false);
+//            System.out.println("Tiro " + (i+1) + ":" + texto); 
             gbc.gridx = i;
             painelBotoes.add(tiro, gbc);
         }
@@ -79,6 +85,8 @@ public class JanelaJogo extends JFrame implements ActionListener {
         JButton dica = new JButton("Dica");
         dica.setName("Dica");
         dica.addActionListener(this);
+        if (this.dicasRestantes == 0)
+            dica.setEnabled(false);
         gbc.gridx = ++i;
         painelBotoes.add(dica, gbc);
         
@@ -116,21 +124,18 @@ public class JanelaJogo extends JFrame implements ActionListener {
         
         
         // TABULEIRO DO JOGADOR
+        String letras = " ABCDEFGHIJ";
         JPanel painelJogador = new JPanel(); 
         painelJogador.setLayout(new GridLayout(12, 11));
-        
-        String letras = " ABCDEFGHIJ";
         for(i = 0; i < 11; i++) {
             JLabel label = new JLabel("" + letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             painelJogador.add(label);
         }
-        
         for(i = 0; i < 10; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             painelJogador.add(label);
-            
             for(int j = 0; j < 10; j++) {
                 JButton button = new JButton("");
                 button.setBackground(new Color(88, 183, 227));
@@ -139,9 +144,23 @@ public class JanelaJogo extends JFrame implements ActionListener {
                 button.setEnabled(false);
                 String posicao = this.sistema.getUsuario().getPosicaoTabuleiro(i, j);
                 if (!(posicao.equals("-"))) {
-                    button.setEnabled(false);
-                    button.setBackground(Color.LIGHT_GRAY);
-                }
+                        this.contPartes++;
+                        int elementoIndex = this.sistema.getElementoIndexPorCod(posicao);
+                        String urlElemento = this.sistema.getElementos()[elementoIndex].getParcialUrl();
+                        urlElemento += this.contPartes + "png"; /////////////
+                        File arquivo = new File(urlElemento);
+                    if (arquivo.exists()) {
+                        ImageIcon imagem = new ImageIcon(urlElemento);
+                        int largura = imagem.getIconWidth()/2;
+                        int altura = imagem.getIconHeight()/2;
+                        imagem = new ImageIcon(imagem.getImage().getScaledInstance(largura, altura, Image.SCALE_DEFAULT));
+                    }
+                    else {
+                        button.setBackground(Color.LIGHT_GRAY);
+                        button.setText(posicao + this.contPartes);
+                    }
+                } else
+                    this.contPartes = 0;
                 painelJogador.add(button);
             }
         }
@@ -149,13 +168,11 @@ public class JanelaJogo extends JFrame implements ActionListener {
         // TABULEIRO DO COMPUTADOR
         JPanel painelComputador = new JPanel();
         painelComputador.setLayout(new GridLayout(12, 11));
-        
         for(i = 0; i < 11; i++) {
             JLabel label = new JLabel("" + letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             painelComputador.add(label);
         }
-        
         for(i = 0; i < 10; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1));
             label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -235,7 +252,8 @@ public class JanelaJogo extends JFrame implements ActionListener {
     
     public void pararCronometro() {
         tempo.cancel();
-        File arquivo = new File("C:\\teste.txt"); // Criando o arquivo.
+//        File arquivo = new File("C:\\teste.txt"); // Criando o arquivo.
+        File arquivo = new File("resources/ranking.txt"); // Criando o arquivo.
         try(FileReader fr = new FileReader(arquivo)) {
             int indexVetor = 0;
             BufferedReader br = new BufferedReader(fr);
@@ -295,17 +313,17 @@ public class JanelaJogo extends JFrame implements ActionListener {
                     this.botaoSelecionado.setText("Disparo Comum selecionado.");
                     break;
                 case "Disparo Cascata":
-                    this.clicouTiro2 = true;
                     this.clicouTiro1 = false;
+                    this.clicouTiro2 = true;
                     this.clicouTiro3 = false;
                     this.clicouDica = false;
                     this.clicouSair = false;
                     this.botaoSelecionado.setText("Disparo Cascata selecionado.");
                     break;
                 case "Disparo Estrela":
-                    this.clicouTiro3 = true;
-                    this.clicouTiro2 = false;
                     this.clicouTiro1 = false;
+                    this.clicouTiro2 = false;
+                    this.clicouTiro3 = true;
                     this.clicouDica = false;
                     this.clicouSair = false;
                     this.botaoSelecionado.setText("Disparo Estrela selecionado.");
@@ -316,7 +334,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                     this.clicouTiro2 = false;
                     this.clicouTiro3 = false;
                     this.clicouSair = false;
-                    this.botaoSelecionado.setText("Dica selecionado. Você tem " + dicasRestantes + " restantes.");
+                    this.botaoSelecionado.setText("Dica selecionado. Você tem " + this.dicasRestantes + " dicas restantes.");
                     
                     break;
                 case "Sair":
@@ -329,53 +347,50 @@ public class JanelaJogo extends JFrame implements ActionListener {
                         int linha, coluna;
                     
                         linha = Integer.parseInt(botaoNome.substring(0, 1)); // "Fatiar" a string para pegar apenas a linha.
-                        System.out.println(linha);
-
                         coluna = Integer.parseInt(botaoNome.substring(2, 3)); // "Fatiar" a string para pegar apenas a coluna.
-                        System.out.println(coluna);
+//                        System.out.println(linha);
+//                        System.out.println(coluna);
 
                         if(clicouDica){
-                            boolean temElemento = false;
-                            // testando cada posição da linha
-                            for (int i = 0; i < this.sistema.getComputador().getNumColunas(); i++) 
-                                if (!(this.sistema.getComputador().getPosicaoTabuleiro(linha, i).equals("-"))) {
-                                    temElemento = true;
-                                    break;
-                                }
-                            
-                            // testando cada posição da coluna
-                            for (int i = 0; i < this.sistema.getComputador().getTabuleiro().length; i++) 
-                                if (!(this.sistema.getComputador().getPosicaoTabuleiro(linha, i).equals("-"))) {
-                                    temElemento = true;
-                                    break;
-                                }
-                            
-                            if (temElemento)
-                                JOptionPane.showMessageDialog(null, "Existe um elemento ou na coluna ou na linha indicada.");
-                            else
-                                JOptionPane.showMessageDialog(null, "Não existe um elemento na coluna nem na linha indicada.");
-                            
-                            dicasRestantes--;
-                            JanelaJogo recarregar = new JanelaJogo(this.sistema); // cria uma nova janela
-                            recarregar.setVisible(true); // deixa a nova janela visivel
-                            
-                            this.dispose(); // "mata" a janela anteriormente aberta
+                            if (this.dicasRestantes > 0) {
+                                boolean temElemento = false;
+                                for (int i = 0; i < this.sistema.getComputador().getNumColunas(); i++) // testando cada posição da linha
+                                    if (!(this.sistema.getComputador().getPosicaoTabuleiro(linha, i).equals("-"))) {
+                                        temElemento = true;
+                                        break;
+                                    }
+                                if (!temElemento) // testando cada posição da coluna (somente se temElemento ainda for falso)
+                                    for (int i = 0; i < this.sistema.getComputador().getTabuleiro().length; i++) 
+                                        if (!(this.sistema.getComputador().getPosicaoTabuleiro(linha, i).equals("-"))) {
+                                            temElemento = true;
+                                            break;
+                                        }
+                                if (temElemento)
+                                    JOptionPane.showMessageDialog(null, "Existe um elemento ou na coluna ou na linha indicada.");
+                                else
+                                    JOptionPane.showMessageDialog(null, "Não existe um elemento na coluna nem na linha indicada.");
+                                this.dicasRestantes--;
+                                this.botaoSelecionado.setText("Dica selecionado. Você tem " + this.dicasRestantes + " dicas restantes.");
+                                
+                                JanelaJogo recarregar = new JanelaJogo(this.sistema); // cria uma nova janela
+                                recarregar.setVisible(true); // deixa a nova janela visivel
+
+                                this.dispose(); // "mata" a janela anteriormente aberta
+                                
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Você não possui mais dicas.");
+                            }
+                        } else {
+                            ((JButton) origem).setEnabled(false);
+                            if(clicouTiro1){
+                                
+                            } else if(clicouTiro2){
+                                
+                            } else if(clicouTiro3){
+                                
+                            }
                         }
-
-                        else if(clicouTiro1){
-
-                        }
-
-                        else if(clicouTiro2){
-
-                        }
-
-                        else if(clicouTiro3){
-
-                        }
-
-                    //}  
-                    break;
+                    break; // break do default
            }
         }
     }

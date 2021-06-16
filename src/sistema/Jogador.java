@@ -55,12 +55,9 @@ public class Jogador {
             this.tabuleiro[linha][j] = cod;
 
         // editar disparo aqui
-        String inicio = linha + "-" + coluna;
-        String fim = linha + "-" + (j-1);
-//        System.out.println(inicio + " ; " + fim);
         int disparoIndex = this.getDisparoIndexPorCod(cod);
         if (disparoIndex != -1) {
-            this.disparos[disparoIndex].setPosicoes(inicio, fim);
+            this.disparos[disparoIndex].tornarDisponivel();
 //            this.disparos[disparoIndex].imprimirDisparo();
         } else {
             System.out.println("Um erro inesperado ocorreu. Desculpe.");
@@ -78,6 +75,11 @@ public class Jogador {
     
     public Disparo[] getDisparos() {
         return this.disparos;
+    }
+    
+    public void resetDisparos() {
+        for (int i = 0; i < this.disparos.length; i++) 
+            this.disparos[i].indisponivel();
     }
     
     public int getDisparoIndexPorCod(String codigo) {

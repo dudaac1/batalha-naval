@@ -17,7 +17,6 @@ public class Sistema {
         
         this.elementos = new Elemento[MAX];
         this.criarElementosEDisparos(); // isso tem q sair dps dos tstes
-        
     }
 
     public Jogador getUsuario() {
@@ -40,7 +39,7 @@ public class Sistema {
                 coluna = gerador.nextInt(10 - tamanho);
                 casasLivres = 0;
                 for (j = coluna; j < coluna + tamanho; j++) 
-                    if (jogador.getPosicaoTabuleiro(linha, coluna).equals("-")) 
+                    if (jogador.getPosicaoTabuleiro(linha, coluna).equals("-")) // N3
                         casasLivres++;
                 if (casasLivres == tamanho) 
                     possoInserir = true;
@@ -50,33 +49,23 @@ public class Sistema {
             jogador.inserirNavio(linha, coluna, tamanho, codigo);
             
         }
-        System.out.println("TABULEIRO FINAL: ");// ISSO TEM Q SAIR
+        System.out.println("TABULEIRO FINAL " + jogador.getNome() + ":");// ISSO TEM Q SAIR
         jogador.imprimirTabuleiro();// ISSO TEM Q SAIR
     }
     
-    public void limparTabuleiroUsuario() {
-        int i;
-        for (i = 0; i < this.elementos.length; i++) 
-            this.elementos[i].tirarDoTabuleiro();
-        this.usuario.resetTabuleiro();
-    }
-
     public void criarElementosEDisparos() {
-        String[] disparos = new String[MAX];
-        String[] codigos = new String[MAX];
-        
         // os nomes dos elementos devem ser os mesmos das imagens
         this.elementos[0] = new Elemento("Porta-Aviões", 4, "Comum");
         this.elementos[1] = new Elemento("Navio Escolta", 3, "Cascata");
         this.elementos[2] = new Elemento("Submarino", 2, "Comum");
         this.elementos[3] = new Elemento("Caça", 2, "Estrela");
         
-        int i;
-        for (i = 0; i < this.elementos.length; i++) {
+        String[] disparos = new String[MAX];
+        String[] codigos = new String[MAX];
+        for (int i = 0; i < this.elementos.length; i++) {
             disparos[i] = this.elementos[i].getNomeDisparo();
             codigos[i] = this.elementos[i].getCodigo();
         }
-        
         this.usuario.gerarDisparos(disparos, codigos);
         this.computador.gerarDisparos(disparos, codigos);
     }
@@ -99,6 +88,14 @@ public class Sistema {
             if (this.elementos[i].getCodigo().equals(codigo)) 
                 return i;
         return -1;
+    }
+
+    public void limparTabuleiroUsuario() {
+        int i;
+        for (i = 0; i < this.elementos.length; i++) 
+            this.elementos[i].tirarDoTabuleiro();
+        this.usuario.resetTabuleiro();
+        this.usuario.resetDisparos();
     }
     
 }

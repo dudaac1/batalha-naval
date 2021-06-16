@@ -34,6 +34,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
     private static int dicasRestantes = 3;
     private int contPartes;
     private String parteAnterior;
+    private JPanel painelTabuleiros;
     
     public JanelaJogo(Sistema sistema) {
         this.sistema = sistema; // Passando as informações de uma janela para outra.
@@ -41,6 +42,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
         this.janelaSair = new JanelaSair(this, this.sistema);
         this.janelaVenceu = new JanelaVenceu(this, this.sistema);
         this.janelaPerdeu = new JanelaPerdeu(this, this.sistema);
+        this.sistema.getUsuario().imprimirTabuleiro(); // isso sai
         //this.janelaSair.setVisible(false);
         jogar();
         iniciarCronometro();
@@ -119,14 +121,15 @@ public class JanelaJogo extends JFrame implements ActionListener {
         janelaJogo.add(painelBotoes, gbc);
         
         // TABULEIROS
-        JPanel painelTabuleiros = new JPanel();
-        painelTabuleiros.setLayout(new GridBagLayout()); // Dois tabuleiros.
+//        JPanel painelTabuleiros = new JPanel();
+        this.painelTabuleiros = new JPanel();
+        this.painelTabuleiros.setLayout(new GridBagLayout()); // Dois tabuleiros.
         
         
         // TABULEIRO DO JOGADOR
         String letras = " ABCDEFGHIJ";
         JPanel painelJogador = new JPanel(); 
-        painelJogador.setLayout(new GridLayout(12, 11));
+        painelJogador.setLayout(new GridLayout(11, 11));
         for(i = 0; i < 11; i++) {
             JLabel label = new JLabel("" + letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -143,21 +146,30 @@ public class JanelaJogo extends JFrame implements ActionListener {
                 button.setName(i + "-" + j);
                 button.setEnabled(false);
                 String posicao = this.sistema.getUsuario().getPosicaoTabuleiro(i, j);
+                System.out.println(posicao);
                 if (!(posicao.equals("-"))) {
+                    if (this.parteAnterior == posicao) 
                         this.contPartes++;
+                    else {
+                        this.contPartes = 1;
+                    }
+                        this.parteAnterior = posicao;
                         int elementoIndex = this.sistema.getElementoIndexPorCod(posicao);
                         String urlElemento = this.sistema.getElementos()[elementoIndex].getParcialUrl();
-                        urlElemento += this.contPartes + "png"; /////////////
+                        urlElemento += this.contPartes + ".png";
+                        System.out.println(urlElemento);
                         File arquivo = new File(urlElemento);
                     if (arquivo.exists()) {
                         ImageIcon imagem = new ImageIcon(urlElemento);
-                        int largura = imagem.getIconWidth()/2;
-                        int altura = imagem.getIconHeight()/2;
-                        imagem = new ImageIcon(imagem.getImage().getScaledInstance(largura, altura, Image.SCALE_DEFAULT));
+                        int largura = 30;
+                        int altura = 30;
+                        imagem = new ImageIcon(imagem.getImage().getScaledInstance(largura, altura, Image.SCALE_AREA_AVERAGING));
+                        button.setIcon(imagem);
+                        button.setPreferredSize(new Dimension(largura/2, altura/4));
                     }
                     else {
                         button.setBackground(Color.LIGHT_GRAY);
-                        button.setText(posicao + this.contPartes);
+                        button.setText(Integer.toString(this.contPartes));
                     }
                 } else
                     this.contPartes = 0;
@@ -167,7 +179,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
         
         // TABULEIRO DO COMPUTADOR
         JPanel painelComputador = new JPanel();
-        painelComputador.setLayout(new GridLayout(12, 11));
+        painelComputador.setLayout(new GridLayout(11, 11));
         for(i = 0; i < 11; i++) {
             JLabel label = new JLabel("" + letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -183,6 +195,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                 button.setBackground(new Color(222, 136, 230));
                 button.addActionListener(this);
                 button.setName(i + "-" + j);
+                button.setPreferredSize(new Dimension(30, 30));
                 painelComputador.add(button);
             }
         }
@@ -195,30 +208,26 @@ public class JanelaJogo extends JFrame implements ActionListener {
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
         gbc.insets = new Insets(0, 0, 0, 0);
-        painelTabuleiros.add(painelJogador, gbc);
+        this.painelTabuleiros.add(painelJogador, gbc);
         
         gbc.gridx = 1;
         gbc.insets = new Insets(0, 10, 0, 0);
-        painelTabuleiros.add(painelComputador, gbc);
+        this.painelTabuleiros.add(painelComputador, gbc);
         
         gbc.gridx = 0;
         gbc.insets = new Insets(0, 20, 0, 30);
-        janelaJogo.add(painelTabuleiros, gbc);
-        
-        
-        JPanel labelPanel  = new JPanel();
-        labelPanel.setLayout(new GridLayout(1, 2));
+        janelaJogo.add(this.painelTabuleiros, gbc);
         
         JLabel txtJogador = new JLabel("Seu tabuleiro.");
         txtJogador.setHorizontalAlignment(SwingConstants.CENTER);
         txtJogador.setFont(new Font("Arial", Font.PLAIN, 14));
-        labelPanel.add(txtJogador);
-        
         JLabel txtComputador = new JLabel("Tabuleiro adversário.");
         txtComputador.setHorizontalAlignment(SwingConstants.CENTER);
         txtComputador.setFont(new Font("Arial", Font.PLAIN, 14));
+        JPanel labelPanel  = new JPanel();
+        labelPanel.setLayout(new GridLayout(1, 2));
+        labelPanel.add(txtJogador);
         labelPanel.add(txtComputador);
-        
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
@@ -298,10 +307,9 @@ public class JanelaJogo extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent event) {
         Object origem = event.getSource(); // Ajuda a determinar qual componente disparou o evento.
-        
         if(origem instanceof JButton) { // "Se 'origem' é um JButton..."
            String botaoNome = ((JButton) origem).getName();
-           System.out.println(botaoNome);
+//           System.out.println(botaoNome);
            
            switch(botaoNome) {
                 case "Disparo Comum":
@@ -335,7 +343,6 @@ public class JanelaJogo extends JFrame implements ActionListener {
                     this.clicouTiro3 = false;
                     this.clicouSair = false;
                     this.botaoSelecionado.setText("Dica selecionado. Você tem " + this.dicasRestantes + " dicas restantes.");
-                    
                     break;
                 case "Sair":
                     pararCronometro();
@@ -343,53 +350,71 @@ public class JanelaJogo extends JFrame implements ActionListener {
                     break;
                 
                 default: // Qualquer botão do tabuleiro.
-                    //if(clicouTiro1 || clicouTiro2 || clicouTiro3 || clicouDica) {
-                        int linha, coluna;
-                    
-                        linha = Integer.parseInt(botaoNome.substring(0, 1)); // "Fatiar" a string para pegar apenas a linha.
-                        coluna = Integer.parseInt(botaoNome.substring(2, 3)); // "Fatiar" a string para pegar apenas a coluna.
-//                        System.out.println(linha);
-//                        System.out.println(coluna);
-
-                        if(clicouDica){
-                            if (this.dicasRestantes > 0) {
-                                boolean temElemento = false;
-                                for (int i = 0; i < this.sistema.getComputador().getNumColunas(); i++) // testando cada posição da linha
+                    int linha, coluna;
+                    linha = Integer.parseInt(botaoNome.substring(0, 1)); // "Fatiar" a string para pegar apenas a linha.
+                    coluna = Integer.parseInt(botaoNome.substring(2, 3)); // "Fatiar" a string para pegar apenas a coluna.
+                    if(clicouDica){
+                        if (this.dicasRestantes > 0) {
+                            boolean temElemento = false;
+                            for (int i = 0; i < this.sistema.getComputador().getNumColunas(); i++) {// testando cada posição da linha
+                                if (!(this.sistema.getComputador().getPosicaoTabuleiro(linha, i).equals("-"))) {
+                                    temElemento = true;
+                                    break;
+                                }
+                            }
+                            if (!temElemento) {// testando cada posição da coluna (somente se temElemento ainda for falso)
+                                for (int i = 0; i < this.sistema.getComputador().getTabuleiro().length; i++) {
                                     if (!(this.sistema.getComputador().getPosicaoTabuleiro(linha, i).equals("-"))) {
                                         temElemento = true;
                                         break;
                                     }
-                                if (!temElemento) // testando cada posição da coluna (somente se temElemento ainda for falso)
-                                    for (int i = 0; i < this.sistema.getComputador().getTabuleiro().length; i++) 
-                                        if (!(this.sistema.getComputador().getPosicaoTabuleiro(linha, i).equals("-"))) {
-                                            temElemento = true;
-                                            break;
-                                        }
-                                if (temElemento)
-                                    JOptionPane.showMessageDialog(null, "Existe um elemento ou na coluna ou na linha indicada.");
-                                else
-                                    JOptionPane.showMessageDialog(null, "Não existe um elemento na coluna nem na linha indicada.");
-                                this.dicasRestantes--;
-                                this.botaoSelecionado.setText("Dica selecionado. Você tem " + this.dicasRestantes + " dicas restantes.");
-                                
-                                JanelaJogo recarregar = new JanelaJogo(this.sistema); // cria uma nova janela
-                                recarregar.setVisible(true); // deixa a nova janela visivel
-
-                                this.dispose(); // "mata" a janela anteriormente aberta
-                                
+                                }
+                            }
+                            if (temElemento) {
+                                JOptionPane.showMessageDialog(null, "Existe um elemento ou na coluna ou na linha indicada.");
                             } else {
-                                JOptionPane.showMessageDialog(null, "Você não possui mais dicas.");
+                                JOptionPane.showMessageDialog(null, "Não existe um elemento na coluna nem na linha indicada.");
+                            }
+                            this.dicasRestantes--;
+                            this.botaoSelecionado.setText("Dica selecionado. Você tem " + this.dicasRestantes + " dicas restantes.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Você não possui mais dicas.");
+                        }
+                    } else {
+                        if (clicouTiro1 || clicouTiro1 || clicouTiro1 ) {
+                            ((JButton) origem).setEnabled(false);
+                            String posicao = this.sistema.getComputador().getPosicaoTabuleiro(linha, coluna);
+                            int disparoIndex = this.sistema.getUsuario().getDisparoIndexPorCod(posicao);
+                            if (posicao.equals("-")) {
+                                ((JButton) origem).setBackground(Color.BLUE);
+                            } else {
+                                ((JButton) origem).setBackground(Color.RED);
+                                this.sistema.getUsuario().getDisparos()[disparoIndex].parteFoiAtingida();
+                            }
+
+                            if(clicouTiro1){ // Comum
+                                if (this.sistema.getUsuario().getDisparos()[disparoIndex].getDisponivel()) 
+                                    this.sistema.getUsuario().getDisparos()[disparoIndex].indisponivel();
+                                else
+                                    this.sistema.getUsuario().getDisparos()[disparoIndex].tornarDisponivel();
+
+                            } else if(clicouTiro2){ // Cascata
+                                if (coluna+1 < this.sistema.getUsuario().getNumColunas()){
+                                    for(Component comp : this.painelTabuleiros.getComponents()) {
+                                        System.out.println(comp.toString());
+                                        if (comp instanceof JButton) {
+
+                                           System.out.println(((JButton) comp).getName());
+                                        }
+                                    }
+                                }
+                            } else if(clicouTiro3){ // Estrela
+
                             }
                         } else {
-                            ((JButton) origem).setEnabled(false);
-                            if(clicouTiro1){
-                                
-                            } else if(clicouTiro2){
-                                
-                            } else if(clicouTiro3){
-                                
-                            }
+                            JOptionPane.showMessageDialog(null, "Selecione um dos elementos antes de clicar no tabuleiro.");
                         }
+                    }
                     break; // break do default
            }
         }

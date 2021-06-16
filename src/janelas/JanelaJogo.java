@@ -34,7 +34,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
     private static int dicasRestantes = 3;
     private int contPartes;
     private String parteAnterior;
-    private JPanel painelTabuleiros;
+    private JPanel painelComputador;
     
     public JanelaJogo(Sistema sistema) {
         this.sistema = sistema; // Passando as informações de uma janela para outra.
@@ -42,7 +42,6 @@ public class JanelaJogo extends JFrame implements ActionListener {
         this.janelaSair = new JanelaSair(this, this.sistema);
         this.janelaVenceu = new JanelaVenceu(this, this.sistema);
         this.janelaPerdeu = new JanelaPerdeu(this, this.sistema);
-        this.sistema.getUsuario().imprimirTabuleiro(); // isso sai
         //this.janelaSair.setVisible(false);
         jogar();
         iniciarCronometro();
@@ -121,9 +120,9 @@ public class JanelaJogo extends JFrame implements ActionListener {
         janelaJogo.add(painelBotoes, gbc);
         
         // TABULEIROS
-//        JPanel painelTabuleiros = new JPanel();
-        this.painelTabuleiros = new JPanel();
-        this.painelTabuleiros.setLayout(new GridBagLayout()); // Dois tabuleiros.
+        JPanel painelTabuleiros = new JPanel();
+//        this.painelTabuleiros = new JPanel();
+        painelTabuleiros.setLayout(new GridBagLayout()); // Dois tabuleiros.
         
         
         // TABULEIRO DO JOGADOR
@@ -146,7 +145,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                 button.setName(i + "-" + j);
                 button.setEnabled(false);
                 String posicao = this.sistema.getUsuario().getPosicaoTabuleiro(i, j);
-                System.out.println(posicao);
+//                System.out.println(posicao);
                 if (!(posicao.equals("-"))) {
                     if (this.parteAnterior == posicao) 
                         this.contPartes++;
@@ -157,7 +156,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                         int elementoIndex = this.sistema.getElementoIndexPorCod(posicao);
                         String urlElemento = this.sistema.getElementos()[elementoIndex].getParcialUrl();
                         urlElemento += this.contPartes + ".png";
-                        System.out.println(urlElemento);
+//                        System.out.println(urlElemento);
                         File arquivo = new File(urlElemento);
                     if (arquivo.exists()) {
                         ImageIcon imagem = new ImageIcon(urlElemento);
@@ -171,24 +170,26 @@ public class JanelaJogo extends JFrame implements ActionListener {
                         button.setBackground(Color.LIGHT_GRAY);
                         button.setText(Integer.toString(this.contPartes));
                     }
-                } else
-                    this.contPartes = 0;
+                }
+//                else
+//                    this.contPartes = 0;
                 painelJogador.add(button);
             }
         }
         
         // TABULEIRO DO COMPUTADOR
-        JPanel painelComputador = new JPanel();
-        painelComputador.setLayout(new GridLayout(11, 11));
+//        JPanel painelComputador = new JPanel();
+        this.painelComputador = new JPanel();
+        this.painelComputador.setLayout(new GridLayout(11, 11));
         for(i = 0; i < 11; i++) {
             JLabel label = new JLabel("" + letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            painelComputador.add(label);
+            this.painelComputador.add(label);
         }
         for(i = 0; i < 10; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            painelComputador.add(label);
+            this.painelComputador.add(label);
             
             for(int j = 0; j < 10; j++) {
                 JButton button = new JButton("");
@@ -196,7 +197,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                 button.addActionListener(this);
                 button.setName(i + "-" + j);
                 button.setPreferredSize(new Dimension(30, 30));
-                painelComputador.add(button);
+                this.painelComputador.add(button);
             }
         }
         
@@ -208,15 +209,15 @@ public class JanelaJogo extends JFrame implements ActionListener {
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
         gbc.insets = new Insets(0, 0, 0, 0);
-        this.painelTabuleiros.add(painelJogador, gbc);
+        painelTabuleiros.add(painelJogador, gbc);
         
         gbc.gridx = 1;
         gbc.insets = new Insets(0, 10, 0, 0);
-        this.painelTabuleiros.add(painelComputador, gbc);
+        painelTabuleiros.add(this.painelComputador, gbc);
         
         gbc.gridx = 0;
         gbc.insets = new Insets(0, 20, 0, 30);
-        janelaJogo.add(this.painelTabuleiros, gbc);
+        janelaJogo.add(painelTabuleiros, gbc);
         
         JLabel txtJogador = new JLabel("Seu tabuleiro.");
         txtJogador.setHorizontalAlignment(SwingConstants.CENTER);
@@ -381,35 +382,79 @@ public class JanelaJogo extends JFrame implements ActionListener {
                             JOptionPane.showMessageDialog(null, "Você não possui mais dicas.");
                         }
                     } else {
-                        if (clicouTiro1 || clicouTiro1 || clicouTiro1 ) {
-                            ((JButton) origem).setEnabled(false);
-                            String posicao = this.sistema.getComputador().getPosicaoTabuleiro(linha, coluna);
-                            int disparoIndex = this.sistema.getUsuario().getDisparoIndexPorCod(posicao);
-                            if (posicao.equals("-")) {
-                                ((JButton) origem).setBackground(Color.BLUE);
-                            } else {
-                                ((JButton) origem).setBackground(Color.RED);
-                                this.sistema.getUsuario().getDisparos()[disparoIndex].parteFoiAtingida();
-                            }
+                        if (this.clicouTiro1 || this.clicouTiro2 || this.clicouTiro3 ) {
+                                verificaBotao(linha, coluna, origem);
 
-                            if(clicouTiro1){ // Comum
-                                if (this.sistema.getUsuario().getDisparos()[disparoIndex].getDisponivel()) 
-                                    this.sistema.getUsuario().getDisparos()[disparoIndex].indisponivel();
-                                else
-                                    this.sistema.getUsuario().getDisparos()[disparoIndex].tornarDisponivel();
+                            if(this.clicouTiro1){ // Comum
+                                // aqui vai dar erro pq eu n tenho mais o disparoIndex pq migrei as coisas pro verificaBotao
+//                                if (this.sistema.getUsuario().getDisparos()[disparoIndex].getDisponivel()) 
+//                                    this.sistema.getUsuario().getDisparos()[disparoIndex].indisponivel();
+//                                else
+//                                    this.sistema.getUsuario().getDisparos()[disparoIndex].tornarDisponivel();
 
-                            } else if(clicouTiro2){ // Cascata
-                                if (coluna+1 < this.sistema.getUsuario().getNumColunas()){
-                                    for(Component comp : this.painelTabuleiros.getComponents()) {
-                                        System.out.println(comp.toString());
+                            } else if(this.clicouTiro2){ // Cascata
+                                // pegando botão à direita do clicado
+                                if (coluna+1 < this.sistema.getUsuario().getNumColunas()){ 
+                                    String nomeBotao = linha + "-" + (coluna+1);
+                                    for(Component comp : this.painelComputador.getComponents()) {
                                         if (comp instanceof JButton) {
-
-                                           System.out.println(((JButton) comp).getName());
+                                            if (((JButton) comp).getName().equals(nomeBotao)) {
+                                                System.out.println(((JButton) comp).getName());
+                                                verificaBotao(linha, coluna+1, comp);
+                                            }
                                         }
                                     }
                                 }
-                            } else if(clicouTiro3){ // Estrela
-
+                            } else if(this.clicouTiro3){ // Estrela
+                                // achar um jeito de otimizar isso daqui
+                                // pegando botão à direita do clicado
+                                if (coluna+1 < this.sistema.getUsuario().getNumColunas()){ 
+                                    String nomeBotao = linha + "-" + (coluna+1);
+                                    for(Component comp : this.painelComputador.getComponents()) {
+                                        if (comp instanceof JButton) {
+                                            if (((JButton) comp).getName().equals(nomeBotao)) {
+                                                System.out.println(((JButton) comp).getName());
+                                                verificaBotao(linha, coluna+1, comp);
+                                            }
+                                        }
+                                    }
+                                }
+                                // pegando botão à esquerda do clicado
+                                if (coluna-1 < this.sistema.getUsuario().getNumColunas()){ 
+                                    String nomeBotao = linha + "-" + (coluna-1);
+                                    for(Component comp : this.painelComputador.getComponents()) {
+                                        if (comp instanceof JButton) {
+                                            if (((JButton) comp).getName().equals(nomeBotao)) {
+                                                System.out.println(((JButton) comp).getName());
+                                                verificaBotao(linha, coluna-1, comp);
+                                            }
+                                        }
+                                    }
+                                }
+                                // pegando botão acima do clicado
+                                if (linha-1 < this.sistema.getUsuario().getNumLinhas()){ 
+                                    String nomeBotao = (linha-1) + "-" + coluna;
+                                    for(Component comp : this.painelComputador.getComponents()) {
+                                        if (comp instanceof JButton) {
+                                            if (((JButton) comp).getName().equals(nomeBotao)) {
+                                                System.out.println(((JButton) comp).getName());
+                                                verificaBotao(linha-1, coluna, comp);
+                                            }
+                                        }
+                                    }
+                                }
+                                // pegando botão abaixo do clicado
+                                if (linha+1 < this.sistema.getUsuario().getNumLinhas()){ 
+                                    String nomeBotao = (linha+1) + "-" + coluna;
+                                    for(Component comp : this.painelComputador.getComponents()) {
+                                        if (comp instanceof JButton) {
+                                            if (((JButton) comp).getName().equals(nomeBotao)) {
+                                                System.out.println(((JButton) comp).getName());
+                                                verificaBotao(linha+1, coluna, comp);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         } else {
                             JOptionPane.showMessageDialog(null, "Selecione um dos elementos antes de clicar no tabuleiro.");
@@ -417,6 +462,18 @@ public class JanelaJogo extends JFrame implements ActionListener {
                     }
                     break; // break do default
            }
+        }
+    }
+    
+    private void verificaBotao(int linha, int coluna, Object componente) {
+        ((JButton) componente).setEnabled(false);
+        String posicao = this.sistema.getComputador().getPosicaoTabuleiro(linha, coluna);
+        int disparoIndex = this.sistema.getUsuario().getDisparoIndexPorCod(posicao);
+        if (posicao.equals("-")) {
+            ((JButton) componente).setBackground(Color.BLUE);
+        } else {
+            ((JButton) componente).setBackground(Color.RED);
+            this.sistema.getUsuario().getDisparos()[disparoIndex].parteFoiAtingida();
         }
     }
     

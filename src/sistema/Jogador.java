@@ -58,7 +58,6 @@ public class Jogador {
         int disparoIndex = this.getDisparoIndexPorCod(cod);
         if (disparoIndex != -1) {
             this.disparos[disparoIndex].tornarDisponivel();
-//            this.disparos[disparoIndex].imprimirDisparo();
         } else {
             System.out.println("Um erro inesperado ocorreu. Desculpe.");
             System.exit(1);

@@ -6,7 +6,7 @@ package sistema;
 public class Elemento {
     private String nome;
     private int tamanho;
-    private String parcialUrl;
+    private String urlParcial;
     private String url;
     private String codigo; // para testagem
     private boolean noTabuleiro; // se está no tabuleiro
@@ -16,8 +16,8 @@ public class Elemento {
     public Elemento(String nome, int tamanho, String nomeDisparo) {
         this.nome = nome;
         this.tamanho = tamanho;
-        this.parcialUrl = "resources/" + nome;
-        this.url =  this.parcialUrl + ".png";
+        this.urlParcial = "resources/" + nome;
+        this.url =  this.urlParcial + ".png";
         this.codigo = nome.charAt(0) + String.valueOf(tamanho); // letra inicial + tamanho
         this.noTabuleiro = false;
         this.nomeDisparo = nomeDisparo;
@@ -31,8 +31,8 @@ public class Elemento {
         return this.tamanho;
     }
     
-    public String getParcialUrl() {
-        return this.parcialUrl;
+    public String getUrlParcial() {
+        return this.urlParcial;
     }
     
     public String getUrl() {

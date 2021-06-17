@@ -44,20 +44,7 @@ public class Disparo {
         this.partesAtingidas++;
     }
     
-//    public String getPosicaoInicial() {
-//        return this.posicaoInicial;
-//    }
-//    
-//    public String getPosicaoFinal() {
-//        return this.posicaoFinal;
-//    }
-//    
-//    public void setPosicoes(String posInicial, String posFinal) {
-//        this.posicaoInicial = posInicial;
-//        this.posicaoFinal = posFinal;
-//    }
-    
-    public void imprimirDisparo() { // ISSO SAI DEPOIS
+    public void imprimirDisparo() { // ISSO TEM QUE SAIR
         System.out.print(this.nome + " ");
         System.out.print(this.codElemento+ " ");
         System.out.print(this.disponivel+ " ");

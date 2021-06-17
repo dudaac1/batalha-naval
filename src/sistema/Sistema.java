@@ -14,7 +14,6 @@ public class Sistema {
     public Sistema() {
         this.usuario = new Jogador("");
         this.computador = new Jogador("Computador");
-        
         this.elementos = new Elemento[MAX];
         this.criarElementosEDisparos(); // isso tem q sair dps dos tstes
     }
@@ -26,31 +25,9 @@ public class Sistema {
     public Jogador getComputador() {
         return this.computador;
     }
-
-     public void gerarTabuleiro(Jogador jogador) {
-        int i, j, linha, coluna, casasLivres, tamanho;
-        boolean possoInserir;
-        Random gerador = new Random();
-        for (i = 0; i < this.elementos.length; i++) {
-            possoInserir = false;
-            do {
-                tamanho = this.elementos[i].getTamanho();
-                linha = gerador.nextInt(10);
-                coluna = gerador.nextInt(10 - tamanho);
-                casasLivres = 0;
-                for (j = coluna; j < coluna + tamanho; j++) 
-                    if (jogador.getPosicaoTabuleiro(linha, coluna).equals("-")) // N3
-                        casasLivres++;
-                if (casasLivres == tamanho) 
-                    possoInserir = true;
-                 System.out.println("Casas livres = " + casasLivres+ " possoInserir = " + possoInserir);// ISSO TEM Q SAIR
-            } while (!possoInserir);
-            String codigo = this.elementos[i].getCodigo();
-            jogador.inserirNavio(linha, coluna, tamanho, codigo);
-            
-        }
-        System.out.println("TABULEIRO FINAL " + jogador.getNome() + ":");// ISSO TEM Q SAIR
-        jogador.imprimirTabuleiro();// ISSO TEM Q SAIR
+    
+    public int getMaxElementos() {
+        return this.MAX;
     }
     
     public void criarElementosEDisparos() {
@@ -96,6 +73,41 @@ public class Sistema {
             this.elementos[i].tirarDoTabuleiro();
         this.usuario.resetTabuleiro();
         this.usuario.resetDisparos();
+    }
+    
+    public void gerarTabuleiro(Jogador jogador) {
+        int i, linha, coluna, tamanho;
+        boolean possoInserir;
+        Random gerador = new Random();
+        for (i = 0; i < this.elementos.length; i++) {
+            tamanho = this.elementos[i].getTamanho();
+            do {
+                linha = gerador.nextInt(10);
+                coluna = gerador.nextInt(10 - tamanho);
+                possoInserir = testarInsercao(linha, coluna, tamanho, jogador);
+            } while (!possoInserir);
+            String codigo = this.elementos[i].getCodigo();
+            jogador.inserirNavio(linha, coluna, tamanho, codigo);
+            
+        }
+        System.out.println("TABULEIRO FINAL " + jogador.getNome() + ":");// ISSO TEM Q SAIR
+        jogador.imprimirTabuleiro();// ISSO TEM Q SAIR
+    }
+    
+    public boolean testarInsercao(int linha, int coluna, int tamanho, Jogador jogador) {
+        if (coluna + tamanho > jogador.getNumColunas()) 
+            return false;
+        
+        int j, casasLivres = 0;        
+        boolean possoInserir = false;
+        
+        for (j = coluna; j < coluna + tamanho && jogador.getPosicaoTabuleiro(linha, j).equals("-"); j++)
+            casasLivres++;
+                
+        if (casasLivres == tamanho) 
+            possoInserir = true;
+        
+        return possoInserir;
     }
     
 }

@@ -9,10 +9,8 @@ import sistema.Sistema;
 /**
  * @author Eduarda e Julia
  */
-public class JanelaInicial extends JFrame implements ActionListener {  
-
+public class JanelaInicial extends JFrame implements ActionListener, KeyListener {  
     private Sistema sistema; // para as infos serem passadas adiante
-    // globais para a classe pois serão necessários em outros pontos
     private JLabel labPreencha;
     private JTextField fieldNome;
     private JRadioButton radioAleatorio;
@@ -26,12 +24,11 @@ public class JanelaInicial extends JFrame implements ActionListener {
     }
 
     public void inicializar() {
-        // configurações da janela
         setTitle("Bem-Vindo");
         setSize(600, 450);
-        setLocationRelativeTo(null); // centraliza no monitor
-        setDefaultCloseOperation(EXIT_ON_CLOSE); // matar o processo se apertar o X
-        setMinimumSize(new Dimension(600, 450)); // janela não pode ser menor que isso
+        setLocationRelativeTo(null); 
+        setDefaultCloseOperation(EXIT_ON_CLOSE); 
+        setMinimumSize(new Dimension(600, 450)); 
         setVisible(true);
         Container janela = getContentPane();
         janela.setLayout(new GridBagLayout());
@@ -67,13 +64,13 @@ public class JanelaInicial extends JFrame implements ActionListener {
 
         fieldNome = new JTextField();
         fieldNome.setColumns(20);
+        fieldNome.addKeyListener(this);
         gbc.gridy = 5;
         janela.add(fieldNome, gbc);
 
-        // só vai ser usado se, quando o usuário apertar JOGAR
-        // o campo do nome tiver vazio
+        // só vai ser usado se, quando o usuário apertar JOGAR, o nome tiver vazio
         labPreencha = new JLabel(" ");
-        labPreencha.setForeground(Color.RED); // cor da fonte
+        labPreencha.setForeground(Color.RED);
         labPreencha.setFont(new Font("Arial", Font.PLAIN, 12));
         gbc.gridy = 6;
         janela.add(labPreencha, gbc);
@@ -109,27 +106,38 @@ public class JanelaInicial extends JFrame implements ActionListener {
         janela.add(btnJogar, gbc);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent event) {  // método do evento do botão
+    public void jogar() {
         String nomeJogador = fieldNome.getText();
-        System.out.println("Este é o nome: >" + nomeJogador + "<");
         if (nomeJogador.equals("") || nomeJogador.equals(" ")) {
             labPreencha.setText("Preencha o campo acima.");
         } else {
             this.sistema.getUsuario().setNome(nomeJogador);
-//            sistema.setNomeUsuario(nomeJogador);
             boolean jogoAleatorio = radioAleatorio.isSelected();
+            this.sistema.gerarTabuleiro(this.sistema.getComputador()); // gerando tabuleiro do computador
             if (jogoAleatorio) {
-                this.sistema.gerarTabuleiro(this.sistema.getComputador()); // gerando tabuleiro do computador
                 this.sistema.gerarTabuleiro(this.sistema.getUsuario()); // gerando tabuleiro do usuario
                 JanelaJogo jogar = new JanelaJogo(this.sistema);
-                this.setVisible(false); // deixa a janela atual invisível
+                this.setVisible(false); 
                 jogar.setVisible(true);
             } else {
-                MontarJogo montar = new MontarJogo(this.sistema);
-                this.setVisible(false); // deixa a janela atual invisível
+                JanelaMontar montar = new JanelaMontar(this.sistema);
+                this.setVisible(false); 
                 montar.setVisible(true);
             }
+        }
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent event) {  // método do evento do botão
+        jogar();
+    }
+    
+    @Override public void keyTyped(KeyEvent event) {}
+    @Override public void keyPressed(KeyEvent event) {}
+    @Override
+    public void keyReleased(KeyEvent event) {
+        if (event.getKeyCode() == 10) { // ENTER
+            jogar();
         }
     }
 
@@ -142,4 +150,5 @@ public class JanelaInicial extends JFrame implements ActionListener {
             }
         });
     }
+
 }

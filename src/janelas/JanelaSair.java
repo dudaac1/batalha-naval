@@ -15,6 +15,7 @@ public class JanelaSair extends JFrame implements ActionListener {
     public JanelaSair(JanelaJogo janela, Sistema sistema) {
         this.sistema = sistema;
         this.janelaJogo = janela;
+        janela.resetDicas(); 
         sair();
     }
     
@@ -24,10 +25,7 @@ public class JanelaSair extends JFrame implements ActionListener {
         setLocationRelativeTo(null); // Centralizando como padrão.
         setDefaultCloseOperation(EXIT_ON_CLOSE); // Para "matar" o processo quando apertar o X.
         setFont(new Font("Arial", Font.PLAIN, 14));
-        //setVisible(true);
         Container janelaSair = getContentPane();
-        //GridBagConstraints gbc = new GridBagConstraints();
-        //setLayout(new GridBagLayout());
        
         JPanel painelOpcoes = new JPanel();
         painelOpcoes.setLayout(new GridBagLayout());
@@ -42,18 +40,14 @@ public class JanelaSair extends JFrame implements ActionListener {
         
         painelOpcoes.add(reiniciar);
         painelOpcoes.add(novoJogo);
-        
         janelaSair.add(painelOpcoes);
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
         Object origem = event.getSource();
-        
         if(origem instanceof JButton) {
             String botaoNome = ((JButton) origem).getName();
-            System.out.println(botaoNome);
-            
             switch(botaoNome) {
                 case "Reiniciar":
                     this.janelaJogo.dispose();
@@ -66,13 +60,12 @@ public class JanelaSair extends JFrame implements ActionListener {
                     JanelaInicial novoJogo = new JanelaInicial(); 
                     novoJogo.setVisible(true);
                     this.dispose();
-                    //janelaJogo.setVisible(false);
                     break;
             }
         }
     }
     
-    public static void main(String args[]) {
+    public static void main(String args[]) {// ISSO TEM QUE SAIR
         //Sistema sistema = new Sistema();
         //JanelaSair janelaSair = new JanelaSair(sistema);
         //janelaSair.setVisible(true);

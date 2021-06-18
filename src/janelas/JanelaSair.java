@@ -16,6 +16,9 @@ public class JanelaSair extends JFrame implements ActionListener {
         this.sistema = sistema;
         this.janelaJogo = janela;
         janela.resetDicas(); 
+        janela.resetJogadasComputador();
+        this.sistema.getUsuario().resetAcertos();
+        this.sistema.getComputador().resetAcertos();
         sair();
     }
     

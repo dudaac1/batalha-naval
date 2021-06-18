@@ -46,7 +46,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
         this.clicouDica = false;
         this.urlErrou = "resources/jogada-errou.png";
         this.urlAcertou = "resources/jogada-acertou.png";
-        this.jogadasComputador = new boolean[this.sistema.getComputador().getNumLinhas()][this.sistema.getComputador().getNumColunas()];
+        this.jogadasComputador = new boolean[10][10];
         jogar();
         iniciarCronometro();
     }

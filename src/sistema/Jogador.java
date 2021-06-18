@@ -7,12 +7,14 @@ public class Jogador {
     private final int MAX_LIN = 10;
     private final int MAX_COL = 10;
     private String nome;
+    private int acertos;
     private String[][] tabuleiro;
     private Disparo[] disparos;
     
     public Jogador(String nome) {
         this.nome = nome;
         this.tabuleiro = new String[MAX_LIN][MAX_COL];
+        this.acertos = 0;
         this.resetTabuleiro();
     }
     
@@ -24,16 +26,31 @@ public class Jogador {
         this.nome = nome;
     }
     
-    public String[][] getTabuleiro() {
-        return this.tabuleiro;
-    }
-    
     public int getNumLinhas() {
         return this.MAX_LIN;
     }
     
     public int getNumColunas() {
         return this.MAX_COL;
+    }
+    
+    public int getAcertos() {
+        return this.acertos;
+    }
+    
+    public void acertou() {
+        this.acertos++;
+    }
+    
+    public void resetAcertos() {
+        this.acertos = 0;
+        for (int i = 0; i < this.disparos.length; i++) {
+            this.disparos[i].resetPartesAtingidas();
+        }
+    }
+    
+    public String[][] getTabuleiro() {
+        return this.tabuleiro;
     }
     
     public String getPosicaoTabuleiro(int linha, int coluna) {
@@ -78,7 +95,7 @@ public class Jogador {
     
     public void resetDisparos() {
         for (int i = 0; i < this.disparos.length; i++) 
-            this.disparos[i].indisponivel();
+            this.disparos[i].tornarIndisponivel();
     }
     
     public int getDisparoIndexPorCod(String codigo) {
@@ -97,5 +114,14 @@ public class Jogador {
             System.out.println("");
         }
     }
+    
+    public void imprimirPartesAtingidas() { // ISSO TEM QUE SAIR
+        System.out.println("Porta-Avião: " + this.disparos[0].getPartesAtingidas());
+        System.out.println("Escolta: " + this.disparos[1].getPartesAtingidas());
+        System.out.println("Submarino: " + this.disparos[2].getPartesAtingidas());
+        System.out.println("Caça: " + this.disparos[3].getPartesAtingidas());
+        System.out.println();
+    }
+    
     
 }

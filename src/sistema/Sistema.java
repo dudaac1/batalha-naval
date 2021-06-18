@@ -10,12 +10,14 @@ public class Sistema {
     private Jogador usuario;
     private Jogador computador;
     private Elemento[] elementos;
+    private int partesTotais;
 
     public Sistema() {
         this.usuario = new Jogador("");
         this.computador = new Jogador("Computador");
         this.elementos = new Elemento[MAX];
         this.criarElementosEDisparos(); // isso tem q sair dps dos tstes
+        this.partesTotais = 0;
     }
 
     public Jogador getUsuario() {
@@ -42,6 +44,7 @@ public class Sistema {
         for (int i = 0; i < this.elementos.length; i++) {
             disparos[i] = this.elementos[i].getNomeDisparo();
             codigos[i] = this.elementos[i].getCodigo();
+            this.partesTotais += this.elementos[i].getTamanho();
         }
         this.usuario.gerarDisparos(disparos, codigos);
         this.computador.gerarDisparos(disparos, codigos);
@@ -75,6 +78,10 @@ public class Sistema {
         this.usuario.resetDisparos();
     }
     
+    public int getPartesTotais() {
+        return this.partesTotais;
+    }
+    
     public void gerarTabuleiro(Jogador jogador) {
         int i, linha, coluna, tamanho;
         boolean possoInserir;
@@ -88,7 +95,6 @@ public class Sistema {
             } while (!possoInserir);
             String codigo = this.elementos[i].getCodigo();
             jogador.inserirNavio(linha, coluna, tamanho, codigo);
-            
         }
         System.out.println("TABULEIRO FINAL " + jogador.getNome() + ":");// ISSO TEM Q SAIR
         jogador.imprimirTabuleiro();// ISSO TEM Q SAIR
@@ -100,13 +106,10 @@ public class Sistema {
         
         int j, casasLivres = 0;        
         boolean possoInserir = false;
-        
         for (j = coluna; j < coluna + tamanho && jogador.getPosicaoTabuleiro(linha, j).equals("-"); j++)
             casasLivres++;
-                
         if (casasLivres == tamanho) 
             possoInserir = true;
-        
         return possoInserir;
     }
     

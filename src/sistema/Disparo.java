@@ -32,7 +32,7 @@ public class Disparo {
         this.disponivel = true;
     }
     
-    public void indisponivel() {
+    public void tornarIndisponivel() {
         this.disponivel = false;
     }
     
@@ -42,6 +42,10 @@ public class Disparo {
     
     public void parteFoiAtingida() {
         this.partesAtingidas++;
+    }
+    
+    public void resetPartesAtingidas() {
+        this.partesAtingidas = 0;
     }
     
     public void imprimirDisparo() { // ISSO TEM QUE SAIR

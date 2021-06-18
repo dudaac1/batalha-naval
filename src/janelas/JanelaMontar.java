@@ -23,7 +23,6 @@ public class JanelaMontar extends JFrame implements ActionListener {
     public JanelaMontar(Sistema sistema) {
         this.sistema = sistema;
         this.elemento = new Elemento("0", 0, ""); //ao menos 1 caracter pois é usado na classe
-//        this.sistema.gerarTabuleiro(this.sistema.getUsuario()); // isso tem que sair
         montar();
     }
 
@@ -59,29 +58,28 @@ public class JanelaMontar extends JFrame implements ActionListener {
         janelaMontar.add(painelTopo, gbc);
 
         JPanel painelTabuleiro = new JPanel();
-        painelTabuleiro.setLayout(new GridLayout(11, 11));
+        int linha = this.sistema.getUsuario().getNumLinhas();
+        int coluna = this.sistema.getUsuario().getNumColunas();
+        painelTabuleiro.setLayout(new GridLayout((linha+1), (coluna+11)));
         
         // inserindo as letras da grade
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < (linha+1); i++) {
             JLabel label = new JLabel("" + this.letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             painelTabuleiro.add(label);
         }
         
         // inserindo os números e os botões da grade
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < linha; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             painelTabuleiro.add(label);
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < coluna; j++) {
                 JButton button = new JButton("");
                 button.setBackground(new Color(88, 183, 227));
                 button.addActionListener(this);
                 button.setName(i + "-" + j);
-                // se a posição [i][j] do tabuleiro != "-" (ou seja, com navio)
-                // então o botão precisa estar desabilitado e cinza,
                 String posicao = this.sistema.getUsuario().getPosicaoTabuleiro(i, j);
-//                System.out.println(i+":"+j + " = " + posicao);
                 if (!(posicao.equals("-"))) {
                     button.setEnabled(false);
                     button.setBackground(Color.LIGHT_GRAY);

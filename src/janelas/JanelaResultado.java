@@ -23,48 +23,92 @@ public class JanelaResultado extends JFrame implements ActionListener {
     public JanelaResultado(JanelaJogo janela, Sistema sistema, String tempo, String mensagem) {
         this.sistema = sistema;
         this.janelaJogo = janela;
-        this.tempo = new JLabel(tempo);
+        this.janelaJogo.setVisible(true); // PROVAVELMENTE DEIXAR FALSO 
+        janela.resetDicas(); 
+        janela.resetJogadasComputador();
+        this.sistema.getUsuario().resetAcertos();
+        this.sistema.getComputador().resetAcertos();
+        this.tempo = new JLabel("Seu tempo: " + tempo);
         resultado(mensagem);
     }
     
     public void resultado(String mensagem) {
         setTitle("Resultado da partida.");
-        setSize(300, 300);
-        setLocationRelativeTo(null); // Centralizando como padrão.
-        setDefaultCloseOperation(EXIT_ON_CLOSE); // Para "matar" o processo quando apertar o X.
+        setSize(600, 450);
+        setLocationRelativeTo(null); 
+        setDefaultCloseOperation(EXIT_ON_CLOSE); 
         setFont(new Font("Arial", Font.PLAIN, 14));
-        //setVisible(true);
         Container janelaResultado = getContentPane();
-        //GridBagConstraints gbc = new GridBagConstraints();
-        //setLayout(new GridBagLayout());
        
-        JLabel textoResultado = new JLabel(mensagem);
-        textoResultado.setFont(new Font("Arial", Font.PLAIN, 14));
-        textoResultado.setAlignmentY(TOP_ALIGNMENT);
+        GridBagConstraints gbc = new GridBagConstraints();
         
         JPanel painelOpcoes = new JPanel();
         painelOpcoes.setLayout(new GridBagLayout());
         
+        JLabel textoResultado = new JLabel(mensagem);
+        textoResultado.setFont(new Font("Arial Black", Font.PLAIN, 24));
+        textoResultado.setHorizontalAlignment(SwingConstants.CENTER);
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        painelOpcoes.add(textoResultado, gbc);
+        
+        this.tempo.setHorizontalAlignment(SwingConstants.CENTER);
+        this.tempo.setFont(new Font("Arial", Font.PLAIN, 16));
+        gbc.gridy = 1;
+        gbc.insets = new Insets(10, 0, 20, 0);
+        painelOpcoes.add(this.tempo, gbc);
+        
+        this.ranking = new JTextArea(100, 200);
+        this.ranking.setEditable(false); // Para ninguém mexer no ranking.
+        this.ranking.setBackground(janelaResultado.getBackground());
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridheight = 2;
+        gbc.gridwidth = 2;
+        gbc.weightx = 0.25;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.ipady = 5;
+        gbc.ipadx = 15;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        painelOpcoes.add(this.ranking, gbc);
+                
+        JPanel painelBotoes = new JPanel();
+        painelBotoes.setLayout(new GridBagLayout());
+        
         JButton reiniciar = new JButton("Reiniciar");
         reiniciar.setName("Reiniciar");
         reiniciar.addActionListener(this);
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.0;
+        gbc.ipadx = 20;
+        gbc.ipady = 0;
+        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        painelBotoes.add(reiniciar, gbc);
         
         JButton novoJogo = new JButton("Novo Jogo");
         novoJogo.setName("Novo Jogo");
         novoJogo.addActionListener(this);
+        gbc.gridx = 1;
+        painelBotoes.add(novoJogo, gbc);
         
-        this.ranking = new JTextArea(100, 100);
-        JScrollPane scrollPane = new JScrollPane(this.ranking);
-        this.ranking.setEditable(false); // Para ninguém mexer no ranking.
-        
-        painelOpcoes.add(textoResultado);
-        painelOpcoes.add(reiniciar);
-        painelOpcoes.add(novoJogo);
-        painelOpcoes.add(this.tempo);
-        painelOpcoes.add(this.ranking);
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridheight = 1;
+        gbc.gridwidth = 2;
+        gbc.ipadx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+        painelOpcoes.add(painelBotoes, gbc);
         
         lerArquivo();
-        
         janelaResultado.add(painelOpcoes);
     }
 
@@ -88,7 +132,6 @@ public class JanelaResultado extends JFrame implements ActionListener {
                     JanelaInicial novoJogo = new JanelaInicial(); 
                     novoJogo.setVisible(true);
                     this.dispose();
-                    //janelaJogo.setVisible(false);
                     break;
             }
         }
@@ -129,8 +172,13 @@ public class JanelaResultado extends JFrame implements ActionListener {
     }
     
     public static void main(String args[]) {// ISSO TEM QUE SAIR
-        Sistema sistema = new Sistema();
-        //JanelaResultado janelaResultado = new JanelaResultado(null, null);
-        //janelaResultado.setVisible(true);
+//        Sistema sistema = new Sistema();
+//        sistema.getUsuario().setNome("Marquinhos");
+//        JanelaJogo jogo = new JanelaJogo(sistema);
+//        jogo.setVisible(false);
+//        String tempo = "00:11:22";
+//        String mensagem = "HELLO here we are";
+//        JanelaResultado janelaResultado = new JanelaResultado(jogo, sistema, tempo, mensagem);
+//        janelaResultado.setVisible(true);
    }  
 }

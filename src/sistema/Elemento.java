@@ -9,7 +9,6 @@ public class Elemento {
     private String urlParcial;
     private String url;
     private String codigo; // para testagem
-    private boolean noTabuleiro; // se está no tabuleiro
     private String nomeDisparo;
 
     
@@ -19,7 +18,6 @@ public class Elemento {
         this.urlParcial = "resources/" + nome;
         this.url =  this.urlParcial + ".png";
         this.codigo = nome.charAt(0) + String.valueOf(tamanho); // letra inicial + tamanho
-        this.noTabuleiro = false;
         this.nomeDisparo = nomeDisparo;
     }
     
@@ -41,18 +39,6 @@ public class Elemento {
     
     public String getCodigo() {
         return this.codigo;
-    }
-    
-    public boolean estaNoTabuleiro() {
-        return this.noTabuleiro;
-    }
-    
-    public void colocarNoTabuleiro() {
-        this.noTabuleiro = true;
-    }
-    
-    public void tirarDoTabuleiro() {
-        this.noTabuleiro = false;
     }
     
     public String getNomeDisparo() {

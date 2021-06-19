@@ -48,9 +48,4 @@ public class Disparo {
         this.partesAtingidas = 0;
     }
     
-    public void imprimirDisparo() { // ISSO TEM QUE SAIR
-        System.out.print(this.nome + " ");
-        System.out.print(this.codElemento+ " ");
-        System.out.print(this.disponivel+ " ");
-    }
 }

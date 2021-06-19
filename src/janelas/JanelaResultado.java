@@ -22,10 +22,10 @@ public class JanelaResultado extends JFrame implements ActionListener {
     
     public JanelaResultado(JanelaJogo janela, Sistema sistema, String tempo, String mensagem) {
         this.sistema = sistema;
-        this.janelaJogo = janela;
-        this.janelaJogo.setVisible(true); // PROVAVELMENTE DEIXAR FALSO 
         janela.resetDicas(); 
         janela.resetJogadasComputador();
+        this.janelaJogo = janela;
+        this.janelaJogo.setVisible(false);
         this.sistema.getUsuario().resetAcertos();
         this.sistema.getComputador().resetAcertos();
         this.tempo = new JLabel("Seu tempo: " + tempo);
@@ -118,8 +118,6 @@ public class JanelaResultado extends JFrame implements ActionListener {
         
         if(origem instanceof JButton) {
             String botaoNome = ((JButton) origem).getName();
-            System.out.println(botaoNome);
-            
             switch(botaoNome) {
                 case "Reiniciar":
                     this.janelaJogo.dispose();
@@ -170,15 +168,5 @@ public class JanelaResultado extends JFrame implements ActionListener {
             }
         } 
     }
-    
-    public static void main(String args[]) {// ISSO TEM QUE SAIR
-//        Sistema sistema = new Sistema();
-//        sistema.getUsuario().setNome("Marquinhos");
-//        JanelaJogo jogo = new JanelaJogo(sistema);
-//        jogo.setVisible(false);
-//        String tempo = "00:11:22";
-//        String mensagem = "HELLO here we are";
-//        JanelaResultado janelaResultado = new JanelaResultado(jogo, sistema, tempo, mensagem);
-//        janelaResultado.setVisible(true);
-   }  
+
 }

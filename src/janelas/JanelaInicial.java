@@ -85,8 +85,10 @@ public class JanelaInicial extends JFrame implements ActionListener, KeyListener
         radioAleatorio = new JRadioButton("Gerar jogo aleatório");
         radioAleatorio.setFont(new Font("Arial", Font.PLAIN, 14));
         radioAleatorio.setSelected(true); // por padrão o tipo Jogo Aleatório vai ta selecionado
+        radioAleatorio.addKeyListener(this);
         radioMontar = new JRadioButton("Montar seu jogo");
         radioMontar.setFont(new Font("Arial", Font.PLAIN, 14));
+        radioMontar.addKeyListener(this);
         ButtonGroup radioGroup = new ButtonGroup(); // para que só um radioButton esteja selecionado por vez
         radioGroup.add(radioAleatorio);
         radioGroup.add(radioMontar);
@@ -112,8 +114,8 @@ public class JanelaInicial extends JFrame implements ActionListener, KeyListener
             labPreencha.setText("Preencha o campo acima.");
         } else {
             this.sistema.getUsuario().setNome(nomeJogador);
-            boolean jogoAleatorio = radioAleatorio.isSelected();
             this.sistema.gerarTabuleiro(this.sistema.getComputador()); // gerando tabuleiro do computador
+            boolean jogoAleatorio = radioAleatorio.isSelected();
             if (jogoAleatorio) {
                 this.sistema.gerarTabuleiro(this.sistema.getUsuario()); // gerando tabuleiro do usuario
                 JanelaJogo jogar = new JanelaJogo(this.sistema);

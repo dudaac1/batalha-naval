@@ -17,8 +17,10 @@ public class JanelaMontar extends JFrame implements ActionListener {
     private Elemento elemento;
     private String letras = " ABCDEFGHIJ";
     private JLabel elementoSelecionado;
-    private static int elementosInseridos = 0;
     private int elementoIndex;
+    private int elementosInseridos = 0;
+    private JPanel painelTabuleiro;
+    private JPanel painelElementos;
 
     public JanelaMontar(Sistema sistema) {
         this.sistema = sistema;
@@ -27,7 +29,7 @@ public class JanelaMontar extends JFrame implements ActionListener {
     }
 
     public void montar() {
-        setTitle("Janela nova");
+        setTitle("Montando seu tabuleiro");
         setSize(900, 600);
         setLocationRelativeTo(null); // Centralizando como padrão.
         setDefaultCloseOperation(EXIT_ON_CLOSE); // Para "matar" o processo quando apertar o X.
@@ -45,7 +47,7 @@ public class JanelaMontar extends JFrame implements ActionListener {
                 "Clique no item que deseja colocar no tabuleiro e clique na posição desejada.");
         subtitulo.setFont(new Font("Arial", Font.PLAIN, 14));
         subtitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        this.elementoSelecionado = new JLabel("");
+        this.elementoSelecionado = new JLabel("Selecione um dos elementos (navios e avião) no painel à direita.");
         this.elementoSelecionado.setHorizontalAlignment(SwingConstants.CENTER);
         painelTopo.add(titulo);
         painelTopo.add(subtitulo);
@@ -57,34 +59,28 @@ public class JanelaMontar extends JFrame implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         janelaMontar.add(painelTopo, gbc);
 
-        JPanel painelTabuleiro = new JPanel();
+        this.painelTabuleiro = new JPanel();
         int linha = this.sistema.getUsuario().getNumLinhas();
         int coluna = this.sistema.getUsuario().getNumColunas();
-        painelTabuleiro.setLayout(new GridLayout((linha+1), (coluna+11)));
+        this.painelTabuleiro.setLayout(new GridLayout((linha+1), (coluna+11)));
         
         // inserindo as letras da grade
         for (int i = 0; i < (linha+1); i++) {
             JLabel label = new JLabel("" + this.letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            painelTabuleiro.add(label);
+            this.painelTabuleiro.add(label);
         }
-        
         // inserindo os números e os botões da grade
         for (int i = 0; i < linha; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1));
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            painelTabuleiro.add(label);
+            this.painelTabuleiro.add(label);
             for (int j = 0; j < coluna; j++) {
                 JButton button = new JButton("");
                 button.setBackground(new Color(88, 183, 227));
                 button.addActionListener(this);
                 button.setName(i + "-" + j);
-                String posicao = this.sistema.getUsuario().getPosicaoTabuleiro(i, j);
-                if (!(posicao.equals("-"))) {
-                    button.setEnabled(false);
-                    button.setBackground(Color.LIGHT_GRAY);
-                }
-                painelTabuleiro.add(button);
+                this.painelTabuleiro.add(button);
             }
         }
         gbc.gridx = 0;
@@ -92,11 +88,11 @@ public class JanelaMontar extends JFrame implements ActionListener {
         gbc.gridwidth = 3;
         gbc.gridheight = 3;
         gbc.fill = GridBagConstraints.BOTH;
-        janelaMontar.add(painelTabuleiro, gbc);
+        janelaMontar.add(this.painelTabuleiro, gbc);
 
         // inserindo elementos (Navios e Avião) na janela
-        JPanel painelElementos = new JPanel();
-        painelElementos.setLayout(new GridLayout(0, 1, 0, 5));
+        this.painelElementos = new JPanel();
+        this.painelElementos.setLayout(new GridLayout(0, 1, 0, 5));
         int i;
         JButton botao;
         for (i = 0; i < this.sistema.getElementos().length; i++) {
@@ -115,27 +111,22 @@ public class JanelaMontar extends JFrame implements ActionListener {
                 botao.setFont(new Font("Arial", Font.PLAIN, 16));
                 botao.setHorizontalAlignment(SwingConstants.CENTER);
             }
-                String codElemento = this.sistema.getElementos()[i].getCodigo(); // o codigo do elemento é o nome do botao
-                botao.setName(codElemento);
-                botao.setPreferredSize(new Dimension(300, 60));
-                botao.addActionListener(new ActionListener() { //actionListener separado para os botões dos elementos
-                    public void actionPerformed(ActionEvent event) {
-                        selecionarElemento(event);
-                    }
-                });
-                // if elemento.noTabuleiro == true, então o botão precisa ficar desabilitado
-                if (this.sistema.getElementos()[i].estaNoTabuleiro()) {
-                    botao.setEnabled(false);
-                    botao.setBackground(Color.LIGHT_GRAY);
+            String codElemento = this.sistema.getElementos()[i].getCodigo(); // o codigo do elemento é o nome do botao
+            botao.setName(codElemento);
+            botao.setPreferredSize(new Dimension(300, 60));
+            botao.addActionListener(new ActionListener() { //actionListener separado para os botões dos elementos
+                public void actionPerformed(ActionEvent event) {
+                    selecionarElemento(event);
                 }
-                painelElementos.add(botao);
+            });
+            this.painelElementos.add(botao);
         }
         gbc.gridx = 3;
         gbc.gridwidth = 1;
         gbc.gridheight = 2;
         gbc.fill = GridBagConstraints.VERTICAL;
         gbc.insets = new Insets(50, 20, 0, 0);
-        janelaMontar.add(painelElementos, gbc);
+        janelaMontar.add(this.painelElementos, gbc);
 
         // botões Jogar e Limpar
         JPanel painelBotoes = new JPanel();
@@ -161,7 +152,6 @@ public class JanelaMontar extends JFrame implements ActionListener {
     public void selecionarElemento(ActionEvent event) {
         Object origem = event.getSource();
         String botaoNome = ((JButton) origem).getName();
-        System.out.println(botaoNome);
         this.elemento = this.sistema.getElementoPorCod(botaoNome);
         if (this.elemento != null) {
             this.elementoSelecionado.setText(this.elemento.getNome() + " selecionado.");
@@ -173,20 +163,19 @@ public class JanelaMontar extends JFrame implements ActionListener {
         }
     }
     
-    // para caso o usuário clicar no botão de Jogar, Limpar ou nos do tabuleiro
     @Override
     public void actionPerformed(ActionEvent event) {
         Object origem = event.getSource();
         if (origem instanceof JButton) {
             String botaoNome = ((JButton) origem).getName();
             switch (botaoNome) {
-                case "Jogar": // caso o usuário clique em Jogar
+                case "Jogar": 
                     jogar();
                     break;
-                case "Limpar": // caso o usuário clique em Limpar
+                case "Limpar": 
                     limparTabuleiroUsuario();
                     break;
-                default: // caso o usuário clique em um dos botões do tabuleiro
+                default: // qualquer botão do tabuleiro
                     inserirElemento(botaoNome);
                     break;
             }
@@ -231,15 +220,15 @@ public class JanelaMontar extends JFrame implements ActionListener {
                 String cod = elemento.getCodigo();
                 if (this.sistema.testarInsercao(linha, coluna, tam, this.sistema.getUsuario())) {
                     this.sistema.getUsuario().inserirNavio(linha, coluna, tam, cod);
-                    this.sistema.getElementos()[elementoIndex].colocarNoTabuleiro();
                     elementosInseridos++;
-                    System.out.println(elementosInseridos);
-                    
-                    // talvez isso não precise
-                     // de repente da pra fazer em tempo de execução como eu fiz com o botao de dicas
-                    JanelaMontar recarregar = new JanelaMontar(this.sistema); // cria uma nova janela
-                    recarregar.setVisible(true); // deixa a nova janela visivel
-                    this.dispose(); // "mata" a janela anteriormente aberta
+                    desabilitarElemento(elementoIndex);
+                    for (int i = 0; i < tam; i++) {
+                        String nomeBotao = linha + "-" + (coluna+i);
+                        desabilitarCelula(nomeBotao, i, elementoIndex);
+                    }
+                    Elemento aux = new Elemento("0", 0, "");
+                    this.elemento = aux;
+                    this.elementoSelecionado.setText("Selecione um dos elementos (navios e avião) no painel à direita.");
                 } else {
                     mensagem = "Muito perto da borda ou já existe um elemento nas posições a serem ocupadas.";
                     JOptionPane.showMessageDialog(null,  mensagem, "Você não pode inserir o elemento aí!", JOptionPane.ERROR_MESSAGE);
@@ -248,11 +237,37 @@ public class JanelaMontar extends JFrame implements ActionListener {
         }
     }
     
-    public static void main(String args[]) { // ISSO TEM QUE SAIR
-        Sistema sistema = new Sistema();
-        sistema.getUsuario().setNome("Fulano");
-//        sistema.setNomeUsuario("Fulano");
-        JanelaMontar janelaMontar = new JanelaMontar(sistema);
-        janelaMontar.setVisible(true);
+    public void desabilitarElemento(int indice) {
+        String nomeBotao = this.sistema.getElementos()[indice].getCodigo();
+        for (Component comp : this.painelElementos.getComponents()) {
+            if (comp instanceof JButton) {
+                if (((JButton) comp).getName().equals(nomeBotao)) {
+                    ((JButton) comp).setEnabled(false);
+                }
+            }
+        }
     }
+    
+    public void desabilitarCelula(String nomeBotao, int i, int elemIndice) {
+        for (Component comp : this.painelTabuleiro.getComponents()) {
+            if (comp instanceof JButton) {
+                if (((JButton) comp).getName().equals(nomeBotao)) {
+                    ((JButton) comp).setEnabled(false);
+                    ((JButton) comp).setBackground(Color.LIGHT_GRAY);
+                    int largura = 40;
+                    int altura = 30;
+                    String url = this.sistema.getElementos()[elemIndice].getUrlParcial();
+                    url += (i+1) + ".png";
+                    File arquivo = new File(url);
+                    if (arquivo.exists()) {
+                        ImageIcon imagem = new ImageIcon(url);
+                        imagem = new ImageIcon(imagem.getImage().getScaledInstance(largura, altura, Image.SCALE_DEFAULT));
+                        ((JButton) comp).setIcon(imagem);
+                        ((JButton) comp).setPreferredSize(new Dimension(altura, altura));
+                    }
+                }
+            }
+        }
+    }
+    
 }

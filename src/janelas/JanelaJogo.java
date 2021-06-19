@@ -24,18 +24,18 @@ public class JanelaJogo extends JFrame implements ActionListener {
     private JanelaSair janelaSair;
     private JanelaResultado janelaResultado;
 	private boolean usuarioVenceu = false;
-    private static int contador = 0;
+    private int contador = 0;
     private JLabel cronometro;
     private Timer tempo;
     private int vetorRanking[] = new int[15];
     private String vetorNomes[] = new String[15];
     private JPanel painelBotoes, painelComputador, painelJogador;
+    private boolean disparoPortaAviao = true;
     private boolean clicouTiro1, clicouTiro2, clicouTiro3, clicouDica;
-    private static int dicasRestantes = 3;
+    private int dicasRestantes = 3;
     private JButton dica;
     private JLabel botaoSelecionado;
-    private String urlErrou, urlAcertou;
-    private boolean[][] jogadasComputador;
+    private boolean[][] jogadasComputador = new boolean[10][10];
     
     public JanelaJogo(Sistema sistema) {
         this.sistema = sistema; // Passando as informações de uma janela para outra.
@@ -44,21 +44,9 @@ public class JanelaJogo extends JFrame implements ActionListener {
         this.clicouTiro2 = false;
         this.clicouTiro3 = false;
         this.clicouDica = false;
-        this.urlErrou = "resources/jogada-errou.png";
-        this.urlAcertou = "resources/jogada-acertou.png";
-        this.jogadasComputador = new boolean[10][10];
+        resetJogadasComputador();
         jogar();
         iniciarCronometro();
-    }
-    
-    public void resetDicas() {
-        this.dicasRestantes = 3;
-    }
-    
-    public void resetJogadasComputador() {
-        for (int i = 0; i < this.sistema.getComputador().getNumLinhas(); i++)
-            for (int j = 0; j < this.sistema.getComputador().getNumColunas(); j++)
-                this.jogadasComputador[i][j] = false;
     }
     
     public void jogar() {
@@ -74,7 +62,6 @@ public class JanelaJogo extends JFrame implements ActionListener {
         setLayout(new GridBagLayout());
         
         cronometro = new JLabel("00:00:00");
-        System.out.println(this.sistema.getUsuario().getNome());
         
         // BOTÕES
         this.painelBotoes = new JPanel();
@@ -91,19 +78,21 @@ public class JanelaJogo extends JFrame implements ActionListener {
             tiro = new JButton(texto);
             tiro.setName("Disparo" + i);
             tiro.addActionListener(this);
-//            if (!this.sistema.getUsuario().getDisparos()[i].getDisponivel())
-//                tiro.setEnabled(false);
             gbc.gridx = i;
             this.painelBotoes.add(tiro, gbc);
         }
         
         this.dica = new JButton("Dica");
-        dica.setName("Dica");
-        dica.addActionListener(this);
-//        if (dicasRestantes == 0)
-//            dica.setEnabled(false);
+        this.dica.setName("Dica");
+        this.dica.addActionListener(this);
         gbc.gridx = ++i;
         this.painelBotoes.add(this.dica, gbc);
+        
+        JButton passar = new JButton("Passar a vez");
+        passar.setName("Passar");
+        passar.addActionListener(this);
+        gbc.gridx = ++i;
+        this.painelBotoes.add(passar, gbc);
         
         JButton sair = new JButton("Sair");
         sair.setName("Sair");
@@ -136,28 +125,29 @@ public class JanelaJogo extends JFrame implements ActionListener {
         // TABULEIROS
         JPanel painelTabuleiros = new JPanel();
         painelTabuleiros.setLayout(new GridBagLayout()); // Dois tabuleiros.
+        int linha = this.sistema.getUsuario().getNumLinhas();
+        int coluna = this.sistema.getUsuario().getNumColunas();
         
         // TABULEIRO DO JOGADOR
         String letras = " ABCDEFGHIJ";
-//        JPanel painelJogador = new JPanel(); 
         this.painelJogador = new JPanel(); 
-        this.painelJogador.setLayout(new GridLayout(11, 11));
-        for(i = 0; i < 11; i++) {
+        this.painelJogador.setLayout(new GridLayout((linha+1), (coluna+1)));
+        for(i = 0; i < (linha+1); i++) {
             JLabel label = new JLabel("" + letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             this.painelJogador.add(label);
         }
-        for(i = 0; i < 10; i++) {
+        for(i = 0; i < linha; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             this.painelJogador.add(label);
             int contPartes = 0;
             String parteAnterior = "";
-            for(int j = 0; j < 10; j++) {
+            for(int j = 0; j < coluna; j++) {
                 String posicao = this.sistema.getUsuario().getPosicaoTabuleiro(i, j);
                 JButton button = new JButton("");
                 if (!(posicao.equals("-"))) {
-                    if (parteAnterior == posicao) {
+                    if (parteAnterior.equals(posicao)) {
                         contPartes++;
                     } else {
                         contPartes = 1;
@@ -188,18 +178,17 @@ public class JanelaJogo extends JFrame implements ActionListener {
         
         // TABULEIRO DO COMPUTADOR
         this.painelComputador = new JPanel();
-        this.painelComputador.setLayout(new GridLayout(11, 11));
-        for(i = 0; i < 11; i++) {
+        this.painelComputador.setLayout(new GridLayout((linha+1), (coluna+1)));
+        for(i = 0; i < (linha+1); i++) {
             JLabel label = new JLabel("" + letras.charAt(i));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             this.painelComputador.add(label);
         }
-        for(i = 0; i < 10; i++) {
+        for(i = 0; i < linha; i++) {
             JLabel label = new JLabel(String.valueOf(i + 1));
             label.setHorizontalAlignment(SwingConstants.CENTER);
             this.painelComputador.add(label);
-            
-            for(int j = 0; j < 10; j++) {
+            for(int j = 0; j < coluna; j++) {
                 JButton button = new JButton("");
                 button.setBackground(new Color(222, 136, 230));
                 button.addActionListener(this);
@@ -248,6 +237,16 @@ public class JanelaJogo extends JFrame implements ActionListener {
         janelaJogo.add(labelPanel, gbc);
     }
     
+    public void resetDicas() {
+        this.dicasRestantes = 3;
+    }
+    
+    public void resetJogadasComputador() {
+        for (int i = 0; i < this.sistema.getComputador().getNumLinhas(); i++)
+            for (int j = 0; j < this.sistema.getComputador().getNumColunas(); j++)
+                this.jogadasComputador[i][j] = false;
+    }
+    
     public void iniciarCronometro() { // Iniciando a thread.
         EventQueue.invokeLater(new Runnable(){
             @Override
@@ -271,7 +270,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
     public void pararCronometro() {
         tempo.cancel();
         if(this.usuarioVenceu) { // Só salva o tempo do jogador no ranking se ele venceu.
-            File arquivo = new File("resources/ranking.txt"); // Criando o arquivo.
+            File arquivo = new File("resources/ranking.txt"); // Pegando o arquivo.
             try(FileReader fr = new FileReader(arquivo)) {
                 BufferedReader br = new BufferedReader(fr);
                 String conteudoLinha; // Conteúdo da linha do arquivo.
@@ -358,6 +357,14 @@ public class JanelaJogo extends JFrame implements ActionListener {
                     this.clicouDica = false;
                     this.botaoSelecionado.setText("Disparo Estrela selecionado.");
                     break;
+                case "Passar":
+                    this.clicouTiro1 = false;
+                    this.clicouTiro2 = false;
+                    this.clicouTiro3 = false;
+                    this.clicouDica = false;
+                    this.botaoSelecionado.setText("Você passou a vez. Nenhum disparo selecionado.");
+                    jogadaComputador();
+                    break;
                 case "Dica":
                     this.clicouDica = true;
                     this.clicouTiro1 = false;
@@ -381,8 +388,7 @@ public class JanelaJogo extends JFrame implements ActionListener {
                         int partesTotais = this.sistema.getPartesTotais();
                         if (this.sistema.getUsuario().getAcertos() <= partesTotais && this.sistema.getComputador().getAcertos() <= partesTotais ) {
                             if (this.clicouTiro1 || this.clicouTiro2 || this.clicouTiro3 ){
-                                this.verificarTiro(linha, coluna, origem, this.sistema.getUsuario(), this.sistema.getComputador());
-
+                                verificarTiro(linha, coluna, origem, this.sistema.getUsuario(), this.sistema.getComputador());
                                 if(this.clicouTiro1){ // Comum
                                     // nada
                                 } else if(this.clicouTiro2){ // Cascata
@@ -392,7 +398,8 @@ public class JanelaJogo extends JFrame implements ActionListener {
                                         for(Component comp : this.painelComputador.getComponents()) {
                                             if (comp instanceof JButton) {
                                                 if (((JButton) comp).getName().equals(nomeBotao)) {
-                                                    this.verificarTiro(linha, coluna+1, comp, this.sistema.getUsuario(), this.sistema.getComputador());
+                                                    if (((JButton) comp).isEnabled())
+                                                        verificarTiro(linha, coluna+1, comp, this.sistema.getUsuario(), this.sistema.getComputador());
                                                 }
                                             }
                                         }
@@ -410,13 +417,15 @@ public class JanelaJogo extends JFrame implements ActionListener {
                                         for (Component comp : this.painelComputador.getComponents()) {
                                             if (comp instanceof JButton) {
                                                 if (((JButton) comp).getName().equals(nomeBotao)) {
-                                                    this.verificarTiro(lin, col, comp, this.sistema.getUsuario(), this.sistema.getComputador());
+                                                    if (((JButton) comp).isEnabled())
+                                                        verificarTiro(lin, col, comp, this.sistema.getUsuario(), this.sistema.getComputador());
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                this.jogadaComputador();
+                                checarDisparoPortaAviao();
+                                jogadaComputador();
                             } else {
                                 String mensagem = "Selecione um dos elementos antes de clicar no tabuleiro.";
                                 JOptionPane.showMessageDialog(null, mensagem, "Você não pode fazer isso.", JOptionPane.ERROR_MESSAGE);
@@ -425,7 +434,9 @@ public class JanelaJogo extends JFrame implements ActionListener {
                             if (this.sistema.getUsuario().getAcertos() == partesTotais) {
                                 this.usuarioVenceu();
                             } else {
-                                this.usuarioPerdeu();
+                                if (this.sistema.getComputador().getAcertos() == partesTotais) {
+                                    this.usuarioPerdeu();
+                                }
                             }
                         }
                     }
@@ -453,12 +464,24 @@ public class JanelaJogo extends JFrame implements ActionListener {
             }
             if (temElemento) {
                 String mensagem = "Existe um elemento ou na coluna ou na linha indicada.";
-                ImageIcon icone = new ImageIcon("resources/rosto-feliz.png");
-                JOptionPane.showMessageDialog(null, mensagem, "Uma dica bem usada!", JOptionPane.PLAIN_MESSAGE, icone);
+                String url = "resources/rosto-feliz.png";
+                File arquivo = new File(url);
+                if (arquivo.exists()) {
+                    ImageIcon icone = new ImageIcon(url);
+                    JOptionPane.showMessageDialog(null, mensagem, "Uma dica bem usada!", JOptionPane.PLAIN_MESSAGE, icone);
+                } else {
+                    JOptionPane.showMessageDialog(null, mensagem, "Uma dica bem usada!", JOptionPane.PLAIN_MESSAGE);
+                }
             } else {
                 String mensagem = "Não existe um elemento na coluna nem na linha indicada.";
-                ImageIcon icone = new ImageIcon("resources/rosto-triste.png");
-                JOptionPane.showMessageDialog(null, mensagem, "Você desperdiçou uma dica.", JOptionPane.PLAIN_MESSAGE, icone);
+                String url = "resources/rosto-triste.png";
+                File arquivo = new File(url);
+                if (arquivo.exists()) {
+                    ImageIcon icone = new ImageIcon(url);
+                    JOptionPane.showMessageDialog(null, mensagem, "Você desperdiçou uma dica.", JOptionPane.PLAIN_MESSAGE, icone);
+                } else {
+                    JOptionPane.showMessageDialog(null, mensagem, "Você desperdiçou uma dica.", JOptionPane.PLAIN_MESSAGE);
+                }
             }
             this.dicasRestantes--;
             if (dicasRestantes == 0) {
@@ -485,21 +508,28 @@ public class JanelaJogo extends JFrame implements ActionListener {
         ImageIcon imagem;
         int largura = 40, altura = 30;
         if (posicao.equals("-")) {
-            File arquivo = new File(this.urlErrou);
+            String url = "resources/jogada-errou.png";
+            File arquivo = new File(url);
             if (arquivo.exists()) {
-                imagem = new ImageIcon(this.urlErrou);
+                imagem = new ImageIcon(url);
                 imagem = new ImageIcon(imagem.getImage().getScaledInstance(largura, altura, Image.SCALE_DEFAULT));
                 ((JButton) comp).setIcon(imagem);
+                ((JButton) comp).setPreferredSize(new Dimension(altura, altura));
+                
             } else {
+                ((JButton) comp).setIcon(null);
                 ((JButton) comp).setText("--");
             }
         } else {
-            File arquivo = new File(this.urlAcertou);
+            String url = "resources/jogada-acertou.png";
+            File arquivo = new File(url);
             if (arquivo.exists()) {
-                imagem = new ImageIcon(this.urlAcertou);
+                imagem = new ImageIcon(url);
                 imagem = new ImageIcon(imagem.getImage().getScaledInstance(largura, altura, Image.SCALE_DEFAULT));
                 ((JButton) comp).setIcon(imagem);
+                ((JButton) comp).setPreferredSize(new Dimension(altura, altura));
             } else {
+                ((JButton) comp).setIcon(null);
                 ((JButton) comp).setText("X");
             }
             
@@ -514,9 +544,6 @@ public class JanelaJogo extends JFrame implements ActionListener {
             
             adversario.getDisparos()[disparoIndex].parteFoiAtingida();
             
-            System.out.println(adversario.getNome()+":");
-            adversario.imprimirPartesAtingidas();
-            
             int tamElemento = this.sistema.getElementos()[disparoIndex].getTamanho();
             if (adversario.getDisparos()[disparoIndex].getPartesAtingidas() == tamElemento) {
                 adversario.getDisparos()[disparoIndex].tornarIndisponivel();
@@ -526,7 +553,6 @@ public class JanelaJogo extends JFrame implements ActionListener {
                     for (Component botao : this.painelBotoes.getComponents()) {
                         if (botao instanceof JButton) {
                             if (((JButton) botao).getName().equals(nomeBotao)) {
-                                System.out.println(((JButton) botao).getName());
                                ((JButton) botao).setEnabled(false);
                                 this.clicouTiro1 = false;
                                 this.clicouTiro2 = false;
@@ -534,6 +560,34 @@ public class JanelaJogo extends JFrame implements ActionListener {
                                 this.clicouDica = false;
                                 this.botaoSelecionado.setText("Nenhum tipo de disparo selecionado.");
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    public void checarDisparoPortaAviao() {
+        String nomeBotao = "Disparo0";
+        for (Component comp : this.painelBotoes.getComponents()) {
+            if (comp instanceof JButton) {
+                if (((JButton) comp).getName().equals(nomeBotao)) {
+                    if (this.clicouTiro1) {
+                        if (this.disparoPortaAviao) {
+                            this.disparoPortaAviao = false;
+                            ((JButton) comp).setEnabled(false);
+                            this.clicouTiro1 = false;
+                            this.botaoSelecionado.setText("Nenhum tipo de disparo selecionado.");
+                        } else {
+                            if (this.sistema.getUsuario().getDisparos()[0].getDisponivel()) {
+                                this.disparoPortaAviao = true;
+                                ((JButton) comp).setEnabled(true);
+                            }
+                        }
+                    } else {
+                        if (this.sistema.getUsuario().getDisparos()[0].getDisponivel()) {
+                            this.disparoPortaAviao = true;
+                            ((JButton) comp).setEnabled(true);
                         }
                     }
                 }
@@ -551,8 +605,10 @@ public class JanelaJogo extends JFrame implements ActionListener {
             possoAtirar = verificaSePodeAtirar(linha, coluna);
         } while (!possoAtirar);
         
-        // botar um teste se o disparo ta disponivel
-        int disparo = gerador.nextInt(this.sistema.getMaxElementos());
+        int disparo;
+        do {
+            disparo = gerador.nextInt(this.sistema.getMaxElementos());
+        } while (!this.sistema.getComputador().getDisparos()[disparo].getDisponivel());
         
         String nomeBotao = linha + "-" + coluna;
         for(Component comp : this.painelJogador.getComponents()) {
@@ -634,10 +690,4 @@ public class JanelaJogo extends JFrame implements ActionListener {
         this.janelaResultado.setVisible(true);
     }
     
-    public static void main(String args[]) {// ISSO TEM QUE SAIR
-        Sistema sistema = new Sistema();
-        sistema.getUsuario().setNome("Fulanin");
-        JanelaJogo janelaJogo = new JanelaJogo(sistema);
-        janelaJogo.setVisible(true);
-   }   
 }

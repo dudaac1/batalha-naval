@@ -16,7 +16,7 @@ public class Sistema {
         this.usuario = new Jogador("");
         this.computador = new Jogador("Computador");
         this.elementos = new Elemento[MAX];
-        this.criarElementosEDisparos(); // isso tem q sair dps dos tstes
+        this.criarElementosEDisparos(); // isso tem qUE sair dps dos tstes
         this.partesTotais = 0;
     }
 
@@ -73,13 +73,8 @@ public class Sistema {
     public void limparTabuleiroUsuario() {
         int i;
         for (i = 0; i < this.elementos.length; i++) 
-            this.elementos[i].tirarDoTabuleiro();
         this.usuario.resetTabuleiro();
         this.usuario.resetDisparos();
-    }
-    
-    public int getPartesTotais() {
-        return this.partesTotais;
     }
     
     public void gerarTabuleiro(Jogador jogador) {
@@ -96,8 +91,6 @@ public class Sistema {
             String codigo = this.elementos[i].getCodigo();
             jogador.inserirNavio(linha, coluna, tamanho, codigo);
         }
-        System.out.println("TABULEIRO FINAL " + jogador.getNome() + ":");// ISSO TEM Q SAIR
-        jogador.imprimirTabuleiro();// ISSO TEM Q SAIR
     }
     
     public boolean testarInsercao(int linha, int coluna, int tamanho, Jogador jogador) {
@@ -111,6 +104,10 @@ public class Sistema {
         if (casasLivres == tamanho) 
             possoInserir = true;
         return possoInserir;
+    }
+    
+    public int getPartesTotais() {
+        return this.partesTotais;
     }
     
 }

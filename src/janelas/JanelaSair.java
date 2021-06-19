@@ -14,9 +14,9 @@ public class JanelaSair extends JFrame implements ActionListener {
 
     public JanelaSair(JanelaJogo janela, Sistema sistema) {
         this.sistema = sistema;
-        this.janelaJogo = janela;
-        janela.resetDicas(); 
+        janela.resetDicas();
         janela.resetJogadasComputador();
+        this.janelaJogo = janela;
         this.sistema.getUsuario().resetAcertos();
         this.sistema.getComputador().resetAcertos();
         sair();
@@ -68,9 +68,4 @@ public class JanelaSair extends JFrame implements ActionListener {
         }
     }
     
-    public static void main(String args[]) {// ISSO TEM QUE SAIR
-        //Sistema sistema = new Sistema();
-        //JanelaSair janelaSair = new JanelaSair(sistema);
-        //janelaSair.setVisible(true);
-   }  
 }

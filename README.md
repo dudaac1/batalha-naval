@@ -21,6 +21,17 @@ Projeto ainda em desenvolvimento.
 - Uma janela caso o usuário clique em sair apresentando as opções "Reiniciar Jogo" e "Novo Jogo".
 - Uma janela para ser exibida ao final do jogo informando se o jogador ganhou ou perdeu, com o tempo total de jogo, seguido de um ranking dos 15 melhores jogadores.
 
+# Diretórios
+ - _resources_: contém as imagens e o arquivo .txt necessários para a correta execução do programa;
+ - _src/janelas_: contém os arquivos .java referentes à interface gráfica do projeto;
+ - _src/sistema_: contém os arquivos .java referentes às estruturas necessárias para persistência de dados entre janelas.
+
+# Execução
+Você deve saber que o projeto foi desenvolvido utilizando-se do _Apache Netbeans IDE 12.0_ com o _JDK 11_.<br>
+Para executar o programa, clone o repositório (`git clone https://github.com/dudaac1/batalha-naval`).<br>
+A execução do projeto deve ser feita a partir da classe JanelaInicial.java.
+
+
 ---
 
 _Desenvolvido por Eduarda Carvalho (eduarda.carvalho@inf.ufpel.edu.br) e Júlia Veiga (jvsilva@inf.ufpel.edu.br), junho/2021._
